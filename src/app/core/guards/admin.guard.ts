@@ -1,5 +1,6 @@
 import { inject } from '@angular/core';
 import { CanActivateChildFn, CanActivateFn, Router } from '@angular/router';
+import { AuthUtilityService } from '../services/auth-utility.service';
 
 interface StoredUserInfo {
   role?: string;
@@ -7,15 +8,15 @@ interface StoredUserInfo {
 
 const allowedRoles = new Set(['SUPERADMIN', 'ADMIN']);
 
-function getStoredValue(key: string): string | null {
+function getStoredUserInfoValue(): string | null {
   if (typeof window === 'undefined') {
     return null;
   }
-  return sessionStorage.getItem(key) || localStorage.getItem(key);
+  return sessionStorage.getItem('userInfo') || localStorage.getItem('userInfo');
 }
 
 function resolveAccess(): StoredUserInfo | null {
-  const userInfoRaw = getStoredValue('userInfo');
+  const userInfoRaw = getStoredUserInfoValue();
   if (!userInfoRaw) {
     return null;
   }
@@ -28,9 +29,11 @@ function resolveAccess(): StoredUserInfo | null {
 
 function adminAccessGuard(url: string) {
   const router = inject(Router);
-  const token = getStoredValue('accessToken');
+  const authUtilityService = inject(AuthUtilityService);
+  const token = authUtilityService.getToken();
 
-  if (!token) {
+  if (!token || authUtilityService.isTokenExpired()) {
+    authUtilityService.clearSession();
     return router.createUrlTree(['/auth/login'], {
       queryParams: { returnUrl: url }
     });
