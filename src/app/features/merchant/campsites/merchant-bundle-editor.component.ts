@@ -14,6 +14,7 @@ import {
   ProductType
 } from '../services/merchant-product.service';
 import { BundleComponentDraft } from './models/merchant-bundle-editor.model';
+import { CurrencyIdrPipe } from '../../../shared/pipes/currency-idr.pipe';
 
 @Component({
   selector: 'app-merchant-bundle-editor',
@@ -28,6 +29,7 @@ export class MerchantBundleEditorComponent implements OnInit {
   private fb = inject(FormBuilder);
   private bundleService = inject(MerchantBundleService);
   private productService = inject(MerchantProductService);
+  private currencyIdrPipe = new CurrencyIdrPipe();
 
   campsiteId = 0;
   bundleId?: number;
@@ -240,7 +242,7 @@ export class MerchantBundleEditorComponent implements OnInit {
     if (value === null || value === undefined || Number.isNaN(value)) {
       return 'Rp -';
     }
-    return `Rp ${Number(value).toLocaleString('id-ID')}`;
+    return this.currencyIdrPipe.transform(value);
   }
 
   getComponentName(component: BundleComponentDraft): string {

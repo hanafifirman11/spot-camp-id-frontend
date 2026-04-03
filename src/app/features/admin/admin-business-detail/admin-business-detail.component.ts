@@ -8,11 +8,22 @@ import {
   CampsiteStatus,
   PageMeta
 } from '../services/admin.service';
+import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
+import { StatusBadgeComponent } from '../../../shared/components/status-badge/status-badge.component';
+import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
+import { CurrencyIdrPipe } from '../../../shared/pipes/currency-idr.pipe';
 
 @Component({
   selector: 'app-admin-business-detail',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [
+    CommonModule,
+    RouterLink,
+    PaginationComponent,
+    StatusBadgeComponent,
+    EmptyStateComponent,
+    CurrencyIdrPipe
+  ],
   templateUrl: './admin-business-detail.component.html',
   styleUrl: './admin-business-detail.component.scss'
 })
@@ -84,13 +95,8 @@ export class AdminBusinessDetailComponent implements OnInit {
     this.loadCampsites(this.business.id, 0);
   }
 
-  nextPage(): void {
-    if (!this.business || this.page.number + 1 >= this.page.totalPages) return;
-    this.loadCampsites(this.business.id, this.page.number + 1);
-  }
-
-  prevPage(): void {
-    if (!this.business || this.page.number <= 0) return;
-    this.loadCampsites(this.business.id, this.page.number - 1);
+  changePage(pageNumber: number): void {
+    if (!this.business) return;
+    this.loadCampsites(this.business.id, pageNumber);
   }
 }

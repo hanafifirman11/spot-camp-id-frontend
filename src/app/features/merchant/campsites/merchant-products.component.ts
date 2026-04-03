@@ -7,16 +7,28 @@ import {
   MerchantProduct,
   MerchantProductService,
   ProductListResponse,
-  ProductStatus,
   ProductType
 } from '../services/merchant-product.service';
 import { RoleService } from '../../../core/services/role.service';
 import { FilterOption, StatusFilter, TypeFilter } from './models/merchant-products.model';
+import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
+import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
+import { StatusBadgeComponent } from '../../../shared/components/status-badge/status-badge.component';
+import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { CurrencyIdrPipe } from '../../../shared/pipes/currency-idr.pipe';
 
 @Component({
   selector: 'app-merchant-products',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterLink,
+    EmptyStateComponent,
+    PaginationComponent,
+    StatusBadgeComponent,
+    ConfirmDialogComponent
+  ],
   templateUrl: './merchant-products.component.html',
   styleUrl: './merchant-products.component.scss'
 })
@@ -25,6 +37,7 @@ export class MerchantProductsComponent implements OnInit {
   private campsiteService = inject(MerchantCampsiteService);
   private productService = inject(MerchantProductService);
   private roleService = inject(RoleService);
+  private currencyIdrPipe = new CurrencyIdrPipe();
 
   campsiteId = 0;
   campsiteName = '';
@@ -40,6 +53,8 @@ export class MerchantProductsComponent implements OnInit {
 
   isLoading = false;
   errorMessage = '';
+  pendingArchiveProduct: MerchantProduct | null = null;
+  archiveInProgress = false;
 
   statusOptions: FilterOption<StatusFilter>[] = [
     { label: 'All statuses', value: 'ALL' },
@@ -118,32 +133,32 @@ export class MerchantProductsComponent implements OnInit {
     });
   }
 
-  nextPage() {
-    if (this.page.number + 1 >= this.page.totalPages) return;
-    this.loadProducts(this.page.number + 1);
-  }
-
-  prevPage() {
-    if (this.page.number <= 0) return;
-    this.loadProducts(this.page.number - 1);
-  }
-
-  archiveProduct(product: MerchantProduct) {
+  openArchiveDialog(product: MerchantProduct) {
     if (!product.id) return;
-    const confirmMessage = `Archive ${product.name || 'this product'}?`;
-    if (!window.confirm(confirmMessage)) return;
+    this.pendingArchiveProduct = product;
+  }
+
+  closeArchiveDialog() {
+    if (this.archiveInProgress) return;
+    this.pendingArchiveProduct = null;
+  }
+
+  confirmArchiveProduct() {
+    const product = this.pendingArchiveProduct;
+    if (!product?.id) return;
+    this.archiveInProgress = true;
 
     this.productService.deleteProduct(product.id).subscribe({
-      next: () => this.loadProducts(this.page.number),
+      next: () => {
+        this.pendingArchiveProduct = null;
+        this.archiveInProgress = false;
+        this.loadProducts(this.page.number);
+      },
       error: () => {
         this.errorMessage = 'Unable to archive product. Please try again.';
+        this.archiveInProgress = false;
       }
     });
-  }
-
-  formatStatus(status?: ProductStatus | null): string {
-    if (!status) return 'Unknown';
-    return status.charAt(0) + status.slice(1).toLowerCase();
   }
 
   formatType(type?: ProductType | null): string {
@@ -162,7 +177,7 @@ export class MerchantProductsComponent implements OnInit {
     if (price === undefined || price === null) {
       return 'Rp -';
     }
-    return `Rp ${Number(price).toLocaleString('id-ID')}`;
+    return this.currencyIdrPipe.transform(price);
   }
 
   getStockLabel(product: MerchantProduct): string {

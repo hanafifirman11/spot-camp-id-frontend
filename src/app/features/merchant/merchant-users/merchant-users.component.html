@@ -30,19 +30,17 @@
           <td>{{ user.firstName }} {{ user.lastName }}</td>
           <td>{{ user.email }}</td>
           <td>
-            <select *ngIf="canManageUsers" [value]="user.role" (change)="changeRole(user, $event)" class="role-select">
+            <select *ngIf="canManageUsers" [value]="user.role" (change)="requestRoleChange(user, $event)" class="role-select">
               <option value="MERCHANT_ADMIN">Admin</option>
               <option value="MERCHANT_MEMBER">Member</option>
             </select>
             <span *ngIf="!canManageUsers">{{ user.role === 'MERCHANT_ADMIN' ? 'Admin' : 'Member' }}</span>
           </td>
           <td>
-            <span class="status-badge" [class.active]="user.status === 'ACTIVE'" [class.inactive]="user.status === 'INACTIVE'">
-              {{ user.status }}
-            </span>
+            <app-status-badge [status]="user.status"></app-status-badge>
           </td>
           <td>
-            <button *ngIf="canManageUsers" type="button" class="btn-text" (click)="toggleStatus(user)">
+            <button *ngIf="canManageUsers" type="button" class="btn-text" (click)="requestToggleStatus(user)">
               {{ user.status === 'ACTIVE' ? 'Deactivate' : 'Activate' }}
             </button>
             <span *ngIf="!canManageUsers">-</span>
@@ -92,3 +90,14 @@
     </div>
   </div>
 </div>
+
+<app-confirm-dialog
+  [open]="!!pendingConfirm"
+  [title]="pendingConfirm?.title || 'Confirm action'"
+  [message]="pendingConfirm?.message || ''"
+  [confirmText]="pendingConfirm?.confirmText || 'Confirm'"
+  [tone]="pendingConfirm?.tone || 'default'"
+  [busy]="confirmInProgress"
+  (closed)="closeConfirmDialog()"
+  (confirmed)="confirmPendingAction()">
+</app-confirm-dialog>

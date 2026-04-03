@@ -9,11 +9,22 @@ import {
   ReportingService
 } from '../../../core/services/reporting.service';
 import { FilterOption } from './models/merchant-reports.model';
+import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
+import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
+import { StatusBadgeComponent } from '../../../shared/components/status-badge/status-badge.component';
+import { CurrencyIdrPipe } from '../../../shared/pipes/currency-idr.pipe';
 
 @Component({
   selector: 'app-merchant-reports',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    EmptyStateComponent,
+    PaginationComponent,
+    StatusBadgeComponent,
+    CurrencyIdrPipe
+  ],
   templateUrl: './merchant-reports.component.html',
   styleUrl: './merchant-reports.component.scss'
 })
@@ -159,27 +170,10 @@ export class MerchantReportsComponent implements OnInit {
       });
   }
 
-  nextPage(): void {
-    if (this.page.number + 1 >= this.page.totalPages) return;
-    this.loadReports(this.page.number + 1);
-  }
-
-  prevPage(): void {
-    if (this.page.number <= 0) return;
-    this.loadReports(this.page.number - 1);
-  }
-
   getCampsiteName(): string {
     if (!this.selectedCampsiteId) return 'Select a campsite';
     const campsite = this.campsites.find((item) => item.id === this.selectedCampsiteId);
     return campsite?.name ?? `Campsite #${this.selectedCampsiteId}`;
-  }
-
-  formatCurrency(value?: number | null): string {
-    if (value === null || value === undefined) {
-      return 'Rp -';
-    }
-    return `Rp ${Number(value).toLocaleString('id-ID')}`;
   }
 
   formatPercent(value?: number | null): string {
@@ -187,16 +181,6 @@ export class MerchantReportsComponent implements OnInit {
       return '0%';
     }
     return `${Number(value).toFixed(2)}%`;
-  }
-
-  formatStatus(status?: string | null): string {
-    if (!status) return 'Unknown';
-    return status.replace('_', ' ').toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
-  }
-
-  statusClass(status?: string | null): string {
-    if (!status) return 'status-unknown';
-    return `status-${status.toLowerCase()}`;
   }
 
   private setDefaultDates(): void {

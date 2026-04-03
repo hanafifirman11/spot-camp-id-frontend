@@ -1,0 +1,12 @@
+<div class="dialog-backdrop" *ngIf="open" (click)="onClose()">
+  <div class="dialog" (click)="$event.stopPropagation()">
+    <h3>{{ title }}</h3>
+    <p>{{ message }}</p>
+    <div class="actions">
+      <button type="button" class="ghost" (click)="onClose()" [disabled]="busy">{{ cancelText }}</button>
+      <button type="button" [ngClass]="tone === 'danger' ? 'danger' : 'primary'" (click)="onConfirm()" [disabled]="busy">
+        {{ confirmText }}
+      </button>
+    </div>
+  </div>
+</div>

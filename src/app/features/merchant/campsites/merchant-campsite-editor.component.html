@@ -7,12 +7,7 @@
         {{ isEditMode ? 'Update listing details, amenities, rules, and images.' : 'Add the essentials to launch a new campsite.' }}
       </p>
       <div class="meta" *ngIf="isEditMode">
-        <span class="status"
-              [class.active]="detail?.status === 'ACTIVE'"
-              [class.inactive]="detail?.status === 'INACTIVE'"
-              [class.suspended]="detail?.status === 'SUSPENDED'">
-          {{ detail?.status || 'UNKNOWN' }}
-        </span>
+        <app-status-badge [status]="detail?.status" size="md"></app-status-badge>
         <span class="code" *ngIf="detail?.code">Code {{ detail?.code }}</span>
         <span class="updated" *ngIf="detail?.updatedAt">Updated {{ detail?.updatedAt | date:'medium' }}</span>
       </div>

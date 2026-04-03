@@ -8,11 +8,22 @@ import {
   MerchantBundleService
 } from '../services/merchant-bundle.service';
 import { RoleService } from '../../../core/services/role.service';
+import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
+import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
+import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { CurrencyIdrPipe } from '../../../shared/pipes/currency-idr.pipe';
 
 @Component({
   selector: 'app-merchant-bundles',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [
+    CommonModule,
+    RouterLink,
+    EmptyStateComponent,
+    PaginationComponent,
+    ConfirmDialogComponent,
+    CurrencyIdrPipe
+  ],
   templateUrl: './merchant-bundles.component.html',
   styleUrl: './merchant-bundles.component.scss'
 })
@@ -30,6 +41,8 @@ export class MerchantBundlesComponent implements OnInit {
 
   isLoading = false;
   errorMessage = '';
+  pendingArchiveBundle: MerchantBundle | null = null;
+  archiveInProgress = false;
 
   canEdit = this.roleService.canEditMasterData();
 
@@ -67,35 +80,32 @@ export class MerchantBundlesComponent implements OnInit {
     });
   }
 
-  nextPage() {
-    if (this.page.number + 1 >= this.page.totalPages) return;
-    this.loadBundles(this.page.number + 1);
-  }
-
-  prevPage() {
-    if (this.page.number <= 0) return;
-    this.loadBundles(this.page.number - 1);
-  }
-
-  archiveBundle(bundle: MerchantBundle) {
+  openArchiveDialog(bundle: MerchantBundle) {
     if (!bundle.id) return;
-    const confirmMessage = `Archive ${bundle.name || 'this bundle'}?`;
-    if (!window.confirm(confirmMessage)) return;
+    this.pendingArchiveBundle = bundle;
+  }
 
+  closeArchiveDialog() {
+    if (this.archiveInProgress) return;
+    this.pendingArchiveBundle = null;
+  }
+
+  confirmArchiveBundle() {
+    const bundle = this.pendingArchiveBundle;
+    if (!bundle?.id) return;
+
+    this.archiveInProgress = true;
     this.bundleService.deleteBundle(bundle.id).subscribe({
-      next: () => this.loadBundles(this.page.number),
+      next: () => {
+        this.pendingArchiveBundle = null;
+        this.archiveInProgress = false;
+        this.loadBundles(this.page.number);
+      },
       error: () => {
         this.errorMessage = 'Unable to archive bundle. Please try again.';
+        this.archiveInProgress = false;
       }
     });
-  }
-
-  formatBundlePrice(bundle?: MerchantBundle): string {
-    const price = bundle?.bundlePrice;
-    if (price === undefined || price === null) {
-      return 'Rp -';
-    }
-    return `Rp ${Number(price).toLocaleString('id-ID')}`;
   }
 
   getComponentSummary(bundle: MerchantBundle): string {

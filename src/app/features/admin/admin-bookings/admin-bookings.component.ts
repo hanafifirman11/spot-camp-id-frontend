@@ -13,11 +13,22 @@ import {
   MerchantBookingService
 } from '../../merchant/services/merchant-booking.service';
 import { FilterOption } from './models/admin-bookings.model';
+import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
+import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
+import { StatusBadgeComponent } from '../../../shared/components/status-badge/status-badge.component';
+import { CurrencyIdrPipe } from '../../../shared/pipes/currency-idr.pipe';
 
 @Component({
   selector: 'app-admin-bookings',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    EmptyStateComponent,
+    PaginationComponent,
+    StatusBadgeComponent,
+    CurrencyIdrPipe
+  ],
   templateUrl: './admin-bookings.component.html',
   styleUrl: './admin-bookings.component.scss'
 })
@@ -148,37 +159,10 @@ export class AdminBookingsComponent implements OnInit {
       });
   }
 
-  nextPage(): void {
-    if (this.page.number + 1 >= this.page.totalPages) return;
-    this.loadBookings(this.page.number + 1);
-  }
-
-  prevPage(): void {
-    if (this.page.number <= 0) return;
-    this.loadBookings(this.page.number - 1);
-  }
-
   getCampsiteName(): string {
     if (!this.selectedCampsiteId) return 'Select a campsite';
     const campsite = this.campsites.find((item) => item.id === this.selectedCampsiteId);
     return campsite?.name ?? `Campsite #${this.selectedCampsiteId}`;
-  }
-
-  formatStatus(status?: BookingStatus | null): string {
-    if (!status) return 'Unknown';
-    return status.replace('_', ' ').toLowerCase().replace(/^\w/, (c) => c.toUpperCase());
-  }
-
-  statusClass(status?: BookingStatus | null): string {
-    if (!status) return 'status-unknown';
-    return `status-${status.toLowerCase()}`;
-  }
-
-  formatCurrency(value?: number | null): string {
-    if (value === null || value === undefined) {
-      return 'Rp -';
-    }
-    return `Rp ${Number(value).toLocaleString('id-ID')}`;
   }
 
   getGuestLabel(booking: MerchantBooking): string {

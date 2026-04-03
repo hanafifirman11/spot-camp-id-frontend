@@ -56,7 +56,7 @@
             <span *ngIf="!item.nightsLabel">· Qty {{ item.quantity }}</span>
           </p>
         </div>
-        <span>{{ formatCurrency(item.subtotal) }}</span>
+        <span>{{ item.subtotal | currencyIdr }}</span>
       </div>
     </div>
 
@@ -84,7 +84,7 @@
             <span *ngIf="!item.nightsLabel">· Qty {{ item.quantity }}</span>
           </p>
         </div>
-        <span>{{ formatCurrency(item.subtotal) }}</span>
+        <span>{{ item.subtotal | currencyIdr }}</span>
       </div>
       <p class="item-placeholder" *ngIf="groupedItems.length === 0">Belum ada item tambahan. Pilih item sewa atau beli lewat tombol di bawah.</p>
       <button type="button" class="ghost" (click)="openItemModal()">Pilih items</button>
@@ -121,7 +121,7 @@
       </label>
       <div class="total-row">
         <span>Total</span>
-        <strong>{{ formatCurrency(booking?.totalAmount) }}</strong>
+        <strong>{{ booking?.totalAmount | currencyIdr }}</strong>
       </div>
       <button type="button" class="primary" (click)="proceedToCheckout()" [disabled]="isSubmitting">
         {{ isSubmitting ? 'Processing...' : 'Continue to checkout' }}
@@ -136,7 +136,7 @@
       </div>
       <div class="row" *ngIf="booking?.paymentAmount">
         <span>Amount</span>
-        <strong>{{ formatCurrency(booking?.paymentAmount) }}</strong>
+        <strong>{{ booking?.paymentAmount | currencyIdr }}</strong>
       </div>
       <div class="row" *ngIf="booking?.paymentBankName">
         <span>Bank</span>
@@ -180,7 +180,7 @@
               <small *ngIf="item.description">{{ item.description }}</small>
             </span>
           </label>
-          <div class="price">{{ formatCurrency(item.rentalDetails?.dailyRate) }} / night</div>
+          <div class="price">{{ item.rentalDetails?.dailyRate | currencyIdr }} / night</div>
           <input class="qty" type="number" min="1" [(ngModel)]="selectedTentQuantity" [disabled]="selectedTentId !== item.id">
         </div>
       </section>
@@ -195,7 +195,7 @@
               <small *ngIf="item.description">{{ item.description }}</small>
             </span>
           </label>
-          <div class="price">{{ formatCurrency(item.rentalDetails?.dailyRate) }} / night</div>
+          <div class="price">{{ item.rentalDetails?.dailyRate | currencyIdr }} / night</div>
           <input class="qty" type="number" min="1" [disabled]="!isRentalSelected(item.id)" [ngModel]="selectedRentalAddOns.get(item.id || 0) || 1" (ngModelChange)="setAddOnQuantity(item.id || 0, $event)">
         </div>
       </section>
@@ -210,7 +210,7 @@
               <small *ngIf="item.description">{{ item.description }}</small>
             </span>
           </label>
-          <div class="price">{{ formatCurrency(item.saleDetails?.unitPrice) }} / item</div>
+          <div class="price">{{ item.saleDetails?.unitPrice | currencyIdr }} / item</div>
           <input class="qty" type="number" min="1" [disabled]="!isSaleSelected(item.id)" [ngModel]="selectedSaleItems.get(item.id || 0) || 1" (ngModelChange)="setSaleQuantity(item.id || 0, $event)">
         </div>
       </section>

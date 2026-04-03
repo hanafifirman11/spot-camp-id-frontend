@@ -3,11 +3,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MerchantUser, MerchantUserService, CreateUserRequest } from '../services/merchant-user.service';
 import { RoleService } from '../../../core/services/role.service';
+import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { StatusBadgeComponent } from '../../../shared/components/status-badge/status-badge.component';
 
 @Component({
   selector: 'app-merchant-users',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ConfirmDialogComponent, StatusBadgeComponent],
   templateUrl: './merchant-users.component.html',
   styleUrl: './merchant-users.component.scss'
 })
@@ -25,6 +27,17 @@ export class MerchantUsersComponent implements OnInit {
   };
   createLoading = false;
   createError = '';
+  confirmInProgress = false;
+  pendingConfirm: {
+    user: MerchantUser;
+    action: 'toggle-status' | 'change-role';
+    title: string;
+    message: string;
+    confirmText: string;
+    tone: 'default' | 'danger';
+    nextRole?: 'MERCHANT_ADMIN' | 'MERCHANT_MEMBER';
+    selectElement?: HTMLSelectElement;
+  } | null = null;
 
   private merchantUserService = inject(MerchantUserService);
   private roleService = inject(RoleService);
@@ -83,39 +96,95 @@ export class MerchantUsersComponent implements OnInit {
     });
   }
 
-  toggleStatus(user: MerchantUser): void {
-    if (confirm(`Are you sure you want to ${user.status === 'ACTIVE' ? 'deactivate' : 'activate'} this user?`)) {
-      this.merchantUserService.toggleUserStatus(user.id).subscribe({
-        next: (updatedUser) => {
-          const index = this.users.findIndex(u => u.id === user.id);
-          if (index !== -1) {
-            this.users[index] = updatedUser;
-          }
-        },
-        error: (err) => console.error('Failed to update status', err)
-      });
-    }
+  requestToggleStatus(user: MerchantUser): void {
+    const nextAction = user.status === 'ACTIVE' ? 'Deactivate' : 'Activate';
+    this.pendingConfirm = {
+      user,
+      action: 'toggle-status',
+      title: `${nextAction} user`,
+      message: `${nextAction} ${user.firstName} ${user.lastName}?`,
+      confirmText: nextAction,
+      tone: user.status === 'ACTIVE' ? 'danger' : 'default'
+    };
   }
 
-  changeRole(user: MerchantUser, event: Event): void {
+  requestRoleChange(user: MerchantUser, event: Event): void {
     const select = event.target as HTMLSelectElement;
     const newRole = select.value as 'MERCHANT_ADMIN' | 'MERCHANT_MEMBER';
-    
-    if (confirm(`Change role to ${newRole}?`)) {
-      this.merchantUserService.updateUserRole(user.id, newRole).subscribe({
+    if (newRole === user.role) {
+      return;
+    }
+    this.pendingConfirm = {
+      user,
+      action: 'change-role',
+      title: 'Change user role',
+      message: `Change role for ${user.firstName} ${user.lastName} to ${newRole}?`,
+      confirmText: 'Change role',
+      tone: 'default',
+      nextRole: newRole,
+      selectElement: select
+    };
+  }
+
+  closeConfirmDialog(): void {
+    if (this.confirmInProgress) {
+      return;
+    }
+    if (this.pendingConfirm?.action === 'change-role' && this.pendingConfirm.selectElement) {
+      this.pendingConfirm.selectElement.value = this.pendingConfirm.user.role;
+    }
+    this.pendingConfirm = null;
+  }
+
+  confirmPendingAction(): void {
+    const pending = this.pendingConfirm;
+    if (!pending) {
+      return;
+    }
+
+    this.confirmInProgress = true;
+
+    if (pending.action === 'toggle-status') {
+      this.merchantUserService.toggleUserStatus(pending.user.id).subscribe({
         next: (updatedUser) => {
-          const index = this.users.findIndex(u => u.id === user.id);
-          if (index !== -1) {
-            this.users[index] = updatedUser;
-          }
+          this.replaceUser(updatedUser);
+          this.pendingConfirm = null;
+          this.confirmInProgress = false;
         },
         error: (err) => {
-          console.error('Failed to update role', err);
-          select.value = user.role; // Revert
+          console.error('Failed to update status', err);
+          this.confirmInProgress = false;
         }
       });
-    } else {
-      select.value = user.role; // Revert
+      return;
+    }
+
+    if (!pending.nextRole) {
+      this.confirmInProgress = false;
+      this.closeConfirmDialog();
+      return;
+    }
+
+    this.merchantUserService.updateUserRole(pending.user.id, pending.nextRole).subscribe({
+      next: (updatedUser) => {
+        this.replaceUser(updatedUser);
+        this.pendingConfirm = null;
+        this.confirmInProgress = false;
+      },
+      error: (err) => {
+        console.error('Failed to update role', err);
+        if (pending.selectElement) {
+          pending.selectElement.value = pending.user.role;
+        }
+        this.confirmInProgress = false;
+      }
+    });
+  }
+
+  private replaceUser(updatedUser: MerchantUser): void {
+    const index = this.users.findIndex((user) => user.id === updatedUser.id);
+    if (index !== -1) {
+      this.users[index] = updatedUser;
     }
   }
 }

@@ -3,11 +3,14 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AdminBusinessSummary, AdminService, PageMeta, UserStatus } from '../services/admin.service';
+import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
+import { StatusBadgeComponent } from '../../../shared/components/status-badge/status-badge.component';
+import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
 
 @Component({
   selector: 'app-admin-businesses',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, PaginationComponent, StatusBadgeComponent, EmptyStateComponent],
   templateUrl: './admin-businesses.component.html',
   styleUrl: './admin-businesses.component.scss'
 })
@@ -62,15 +65,5 @@ export class AdminBusinessesComponent implements OnInit {
   goToDetail(business: AdminBusinessSummary): void {
     if (!business.id) return;
     this.router.navigate(['/admin/businesses', business.id]);
-  }
-
-  nextPage(): void {
-    if (this.page.number + 1 >= this.page.totalPages) return;
-    this.loadBusinesses(this.page.number + 1);
-  }
-
-  prevPage(): void {
-    if (this.page.number <= 0) return;
-    this.loadBusinesses(this.page.number - 1);
   }
 }

@@ -112,62 +112,6 @@ tbody tr:hover {
   color: rgba(16, 22, 21, 0.6);
 }
 
-.status {
-  display: inline-flex;
-  align-items: center;
-  padding: 4px 10px;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 600;
-  background: rgba(16, 22, 21, 0.08);
-  color: #101615;
-}
-
-.status.active {
-  background: rgba(var(--primary-rgb), 0.2);
-  color: #2e5c48;
-}
-
-.status.inactive {
-  background: rgba(185, 75, 75, 0.15);
-  color: #a23a3a;
-}
-
-.status.suspended {
-  background: rgba(224, 169, 109, 0.2);
-  color: #ad6d1f;
-}
-
-.pagination {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-top: 12px;
-  font-weight: 600;
-}
-
-.pagination button {
-  border: none;
-  background: rgba(16, 22, 21, 0.08);
-  color: #101615;
-  padding: 6px 12px;
-  border-radius: 999px;
-}
-
-.pagination button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.empty {
-  text-align: center;
-  padding: 30px;
-  background: #ffffff;
-  border-radius: 16px;
-  box-shadow: var(--shadow-soft);
-  color: rgba(16, 22, 21, 0.7);
-}
-
 @media (max-width: 900px) {
   .filters {
     grid-template-columns: 1fr;

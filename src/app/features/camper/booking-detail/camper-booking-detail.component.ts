@@ -12,11 +12,12 @@ import {
   RentalItem,
   SaleItem
 } from './models/camper-booking-detail.model';
+import { CurrencyIdrPipe } from '../../../shared/pipes/currency-idr.pipe';
 
 @Component({
   selector: 'app-camper-booking-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, NavbarComponent],
+  imports: [CommonModule, FormsModule, RouterLink, NavbarComponent, CurrencyIdrPipe],
   templateUrl: './camper-booking-detail.component.html',
   styleUrl: './camper-booking-detail.component.scss'
 })
@@ -393,13 +394,6 @@ export class CamperBookingDetailComponent implements OnInit {
           this.isSubmitting = false;
         }
       });
-  }
-
-  formatCurrency(value?: number | null): string {
-    if (value === null || value === undefined) {
-      return 'Rp -';
-    }
-    return `Rp ${Number(value).toLocaleString('id-ID')}`;
   }
 
   getProofUrl(): string | null {

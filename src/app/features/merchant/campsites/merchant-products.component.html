@@ -56,15 +56,18 @@
   <div class="state loading" *ngIf="isLoading">Loading products...</div>
   <div class="state error" *ngIf="!isLoading && errorMessage">{{ errorMessage }}</div>
 
-  <div class="state empty" *ngIf="!isLoading && !errorMessage && products.length === 0">
-    No products yet. Create your first rental or sale product.
-  </div>
+  <app-empty-state
+    *ngIf="!isLoading && !errorMessage && products.length === 0"
+    message="No products yet. Create your first rental or sale product.">
+  </app-empty-state>
 
   <div class="table-wrapper" *ngIf="!isLoading && !errorMessage && products.length > 0">
     <div class="table-toolbar" *ngIf="page.totalPages > 1">
-      <button type="button" (click)="prevPage()" [disabled]="page.number === 0">Previous</button>
-      <span>Page {{ page.number + 1 }} of {{ page.totalPages }}</span>
-      <button type="button" (click)="nextPage()" [disabled]="page.number + 1 >= page.totalPages">Next</button>
+      <app-pagination
+        [pageNumber]="page.number"
+        [totalPages]="page.totalPages"
+        (pageChange)="loadProducts($event)">
+      </app-pagination>
     </div>
     <table class="products-table">
       <thead>
@@ -95,27 +98,36 @@
             <span class="price-chip">{{ getPriceLabel(product) }}</span>
           </td>
           <td data-label="Status">
-            <span class="status"
-                  [class.active]="product.status === 'ACTIVE'"
-                  [class.inactive]="product.status === 'INACTIVE'"
-                  [class.archived]="product.status === 'ARCHIVED'">
-              {{ formatStatus(product.status) }}
-            </span>
+            <app-status-badge [status]="product.status"></app-status-badge>
           </td>
           <td class="stock" data-label="Stock">{{ getStockLabel(product) }}</td>
           <td class="table-actions" data-label="Actions">
             <div class="actions-row">
               <a [routerLink]="['/merchant/campsites', campsiteId, 'products', product.id]" class="ghost">{{ canEdit ? 'Edit' : 'View' }}</a>
-              <button type="button" class="danger" (click)="archiveProduct(product)">Archive</button>
+              <button type="button" class="danger" (click)="openArchiveDialog(product)">Archive</button>
             </div>
           </td>
         </tr>
       </tbody>
     </table>
     <div class="table-toolbar bottom" *ngIf="page.totalPages > 1">
-      <button type="button" (click)="prevPage()" [disabled]="page.number === 0">Previous</button>
-      <span>Page {{ page.number + 1 }} of {{ page.totalPages }}</span>
-      <button type="button" (click)="nextPage()" [disabled]="page.number + 1 >= page.totalPages">Next</button>
+      <app-pagination
+        [pageNumber]="page.number"
+        [totalPages]="page.totalPages"
+        (pageChange)="loadProducts($event)">
+      </app-pagination>
     </div>
   </div>
+
+  <app-confirm-dialog
+    [open]="!!pendingArchiveProduct"
+    title="Archive product"
+    [message]="'Archive ' + (pendingArchiveProduct?.name || 'this product') + '?'"
+    confirmText="Archive"
+    cancelText="Cancel"
+    tone="danger"
+    [busy]="archiveInProgress"
+    (closed)="closeArchiveDialog()"
+    (confirmed)="confirmArchiveProduct()">
+  </app-confirm-dialog>
 </section>

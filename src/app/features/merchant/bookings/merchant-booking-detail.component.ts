@@ -4,16 +4,17 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import {
   BookingItem,
-  BookingStatus,
   MerchantBooking,
   MerchantBookingService
 } from '../services/merchant-booking.service';
 import { GroupedItem } from './models/merchant-booking-detail.model';
+import { StatusBadgeComponent } from '../../../shared/components/status-badge/status-badge.component';
+import { CurrencyIdrPipe } from '../../../shared/pipes/currency-idr.pipe';
 
 @Component({
   selector: 'app-merchant-booking-detail',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [CommonModule, RouterLink, FormsModule, StatusBadgeComponent, CurrencyIdrPipe],
   templateUrl: './merchant-booking-detail.component.html',
   styleUrl: './merchant-booking-detail.component.scss'
 })
@@ -78,23 +79,6 @@ export class MerchantBookingDetailComponent implements OnInit {
         this.isLoading = false;
       }
     });
-  }
-
-  formatStatus(status?: BookingStatus | null): string {
-    if (!status) return 'Unknown';
-    return status.replace('_', ' ').toLowerCase().replace(/^\w/, (c) => c.toUpperCase());
-  }
-
-  statusClass(status?: BookingStatus | null): string {
-    if (!status) return 'status-unknown';
-    return `status-${status.toLowerCase()}`;
-  }
-
-  formatCurrency(value?: number | null): string {
-    if (value === null || value === undefined) {
-      return 'Rp -';
-    }
-    return `Rp ${Number(value).toLocaleString('id-ID')}`;
   }
 
   formatGuest(): string {

@@ -3,11 +3,12 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { NavbarComponent } from '../../../layout/navbar.component';
 import { CamperBookingService, CamperBooking } from '../services/camper-booking.service';
+import { CurrencyIdrPipe } from '../../../shared/pipes/currency-idr.pipe';
 
 @Component({
   selector: 'app-camper-booking-checkout',
   standalone: true,
-  imports: [CommonModule, NavbarComponent],
+  imports: [CommonModule, NavbarComponent, CurrencyIdrPipe],
   templateUrl: './camper-booking-checkout.component.html',
   styleUrl: './camper-booking-checkout.component.scss'
 })
@@ -74,13 +75,6 @@ export class CamperBookingCheckoutComponent implements OnInit {
         this.isUploading = false;
       }
     });
-  }
-
-  formatCurrency(value?: number | null): string {
-    if (value === null || value === undefined) {
-      return 'Rp -';
-    }
-    return `Rp ${Number(value).toLocaleString('id-ID')}`;
   }
 
   getProofUrl(): string | null {

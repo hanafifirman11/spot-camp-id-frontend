@@ -13,9 +13,10 @@
   <div class="state loading" *ngIf="isLoading">Loading bundles...</div>
   <div class="state error" *ngIf="!isLoading && errorMessage">{{ errorMessage }}</div>
 
-  <div class="state empty" *ngIf="!isLoading && !errorMessage && bundles.length === 0">
-    No bundles yet. Create your first package to boost sales.
-  </div>
+  <app-empty-state
+    *ngIf="!isLoading && !errorMessage && bundles.length === 0"
+    message="No bundles yet. Create your first package to boost sales.">
+  </app-empty-state>
 
   <div class="grid" *ngIf="!isLoading && !errorMessage && bundles.length > 0">
     <article class="card" *ngFor="let bundle of bundles; trackBy: trackById">
@@ -24,7 +25,7 @@
           <h3>{{ bundle.name || 'Untitled bundle' }}</h3>
           <p class="description">{{ bundle.description || 'No description' }}</p>
         </div>
-        <div class="price">{{ formatBundlePrice(bundle) }}</div>
+        <div class="price">{{ bundle.bundlePrice | currencyIdr }}</div>
       </div>
 
       <div class="meta">
@@ -34,14 +35,27 @@
 
       <div class="actions">
         <a [routerLink]="['/merchant/campsites', campsiteId, 'bundles', bundle.id]" class="ghost">{{ canEdit ? 'Edit' : 'View' }}</a>
-        <button *ngIf="canEdit" type="button" class="danger" (click)="archiveBundle(bundle)">Archive</button>
+        <button *ngIf="canEdit" type="button" class="danger" (click)="openArchiveDialog(bundle)">Archive</button>
       </div>
     </article>
   </div>
 
-  <div class="pagination" *ngIf="!isLoading && page.totalPages > 1">
-    <button type="button" (click)="prevPage()" [disabled]="page.number === 0">Previous</button>
-    <span>Page {{ page.number + 1 }} of {{ page.totalPages }}</span>
-    <button type="button" (click)="nextPage()" [disabled]="page.number + 1 >= page.totalPages">Next</button>
-  </div>
+  <app-pagination
+    *ngIf="!isLoading"
+    [pageNumber]="page.number"
+    [totalPages]="page.totalPages"
+    (pageChange)="loadBundles($event)">
+  </app-pagination>
+
+  <app-confirm-dialog
+    [open]="!!pendingArchiveBundle"
+    title="Archive bundle"
+    [message]="'Archive ' + (pendingArchiveBundle?.name || 'this bundle') + '?'"
+    confirmText="Archive"
+    cancelText="Cancel"
+    tone="danger"
+    [busy]="archiveInProgress"
+    (closed)="closeArchiveDialog()"
+    (confirmed)="confirmArchiveBundle()">
+  </app-confirm-dialog>
 </section>

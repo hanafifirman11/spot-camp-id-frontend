@@ -28,9 +28,10 @@
 
   <div class="state loading" *ngIf="isLoading">Loading bookings...</div>
   <div class="state error" *ngIf="!isLoading && errorMessage">{{ errorMessage }}</div>
-  <div class="state empty" *ngIf="!isLoading && !errorMessage && bookings.length === 0">
-    No bookings found.
-  </div>
+  <app-empty-state
+    *ngIf="!isLoading && !errorMessage && bookings.length === 0"
+    message="No bookings found.">
+  </app-empty-state>
 
   <div class="table" *ngIf="!isLoading && bookings.length > 0">
     <div class="row header">
@@ -44,8 +45,10 @@
     <div class="row" *ngFor="let booking of bookings; trackBy: trackById">
       <span class="cell" data-label="Booking">#{{ booking.id }}</span>
       <span class="cell" data-label="Dates">{{ booking.checkInDate || '-' }} → {{ booking.checkOutDate || '-' }}</span>
-      <span class="cell status" data-label="Status" [ngClass]="statusClass(booking.status)">{{ formatStatus(booking.status) }}</span>
-      <span class="cell" data-label="Total">{{ formatCurrency(booking.totalAmount) }}</span>
+      <span class="cell status" data-label="Status">
+        <app-status-badge [status]="booking.status"></app-status-badge>
+      </span>
+      <span class="cell" data-label="Total">{{ booking.totalAmount | currencyIdr }}</span>
       <div class="cell actions">
         <a class="ghost" [routerLink]="['/bookings', booking.id]">Detail</a>
         <a class="ghost" *ngIf="booking.status === 'PAYMENT_PENDING'" [routerLink]="['/bookings', booking.id, 'checkout']">Upload proof</a>
@@ -53,9 +56,10 @@
     </div>
   </div>
 
-  <div class="pagination" *ngIf="!isLoading && page.totalPages > 1">
-    <button type="button" (click)="prevPage()" [disabled]="page.number === 0">Previous</button>
-    <span>Page {{ page.number + 1 }} of {{ page.totalPages }}</span>
-    <button type="button" (click)="nextPage()" [disabled]="page.number + 1 >= page.totalPages">Next</button>
-  </div>
+  <app-pagination
+    *ngIf="!isLoading"
+    [pageNumber]="page.number"
+    [totalPages]="page.totalPages"
+    (pageChange)="loadBookings($event)">
+  </app-pagination>
 </section>

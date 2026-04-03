@@ -9,11 +9,22 @@ import {
   ReportingService
 } from '../../../core/services/reporting.service';
 import { FilterOption } from './models/admin-reports.model';
+import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
+import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
+import { StatusBadgeComponent } from '../../../shared/components/status-badge/status-badge.component';
+import { CurrencyIdrPipe } from '../../../shared/pipes/currency-idr.pipe';
 
 @Component({
   selector: 'app-admin-reports',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    EmptyStateComponent,
+    PaginationComponent,
+    StatusBadgeComponent,
+    CurrencyIdrPipe
+  ],
   templateUrl: './admin-reports.component.html',
   styleUrl: './admin-reports.component.scss'
 })
@@ -192,38 +203,11 @@ export class AdminReportsComponent implements OnInit {
       });
   }
 
-  nextPage(): void {
-    if (this.page.number + 1 >= this.page.totalPages) return;
-    this.loadReports(this.page.number + 1);
-  }
-
-  prevPage(): void {
-    if (this.page.number <= 0) return;
-    this.loadReports(this.page.number - 1);
-  }
-
-  formatCurrency(value?: number | null): string {
-    if (value === null || value === undefined) {
-      return 'Rp -';
-    }
-    return `Rp ${Number(value).toLocaleString('id-ID')}`;
-  }
-
   formatPercent(value?: number | null): string {
     if (value === null || value === undefined) {
       return '0%';
     }
     return `${Number(value).toFixed(2)}%`;
-  }
-
-  formatStatus(status?: string | null): string {
-    if (!status) return 'Unknown';
-    return status.replace('_', ' ').toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
-  }
-
-  statusClass(status?: string | null): string {
-    if (!status) return 'status-unknown';
-    return `status-${status.toLowerCase()}`;
   }
 
   private setDefaultDates(): void {

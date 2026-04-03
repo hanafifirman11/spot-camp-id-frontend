@@ -1,0 +1,59 @@
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  line-height: 1;
+  background: rgba(23, 53, 42, 0.1);
+  color: #2f4b3b;
+  white-space: nowrap;
+}
+
+.status-badge.size-sm {
+  font-size: 11px;
+  padding: 4px 10px;
+}
+
+.status-badge.size-md {
+  font-size: 12px;
+  padding: 6px 12px;
+}
+
+.status-badge.status-payment_pending {
+  background: rgba(214, 165, 77, 0.25);
+  color: #7a4f00;
+}
+
+.status-badge.status-confirmed,
+.status-badge.status-active,
+.status-badge.status-available,
+.status-badge.status-verified {
+  background: rgba(var(--primary-rgb), 0.2);
+  color: #2b5a3f;
+}
+
+.status-badge.status-cancelled,
+.status-badge.status-suspended,
+.status-badge.status-rejected {
+  background: rgba(168, 74, 52, 0.18);
+  color: #7d2d1c;
+}
+
+.status-badge.status-completed,
+.status-badge.status-booked,
+.status-badge.status-uploaded {
+  background: rgba(78, 116, 140, 0.2);
+  color: #2f4b6b;
+}
+
+.status-badge.status-inactive,
+.status-badge.status-archived,
+.status-badge.status-locked,
+.status-badge.status-waiting_upload,
+.status-badge.status-unknown {
+  background: rgba(111, 117, 112, 0.2);
+  color: #4b4f4d;
+}
