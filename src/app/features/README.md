@@ -12,5 +12,15 @@ The following empty folders are intentionally removed because the functionality 
 
 ## `shared/` folder policy
 
-`src/app/shared/` is intentionally not present until reusable cross-feature modules are introduced.
-Reusable shared models/components are planned to be implemented in Issue #4.
+Reusable cross-feature UI building blocks now live in `src/app/shared/`.
+Current shared modules are implemented in Issue #4:
+
+- `src/app/shared/components/status-badge/`
+- `src/app/shared/components/pagination/`
+- `src/app/shared/components/empty-state/`
+- `src/app/shared/components/confirm-dialog/`
+- `src/app/shared/pipes/currency-idr.pipe.ts`
+- `src/app/shared/models/filter-option.model.ts`
+- `src/app/shared/models/grouped-item.model.ts`
+- `src/app/shared/constants/booking-status-options.const.ts`
+- `src/app/shared/services/item-grouping.service.ts`

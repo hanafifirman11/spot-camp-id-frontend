@@ -4,11 +4,25 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { CamperBooking, BookingListResponse, BookingStatus, CamperBookingService } from '../services/camper-booking.service';
 import { NavbarComponent } from '../../../layout/navbar.component';
+import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
+import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
+import { StatusBadgeComponent } from '../../../shared/components/status-badge/status-badge.component';
+import { CurrencyIdrPipe } from '../../../shared/pipes/currency-idr.pipe';
+import { BOOKING_STATUS_OPTIONS } from '../../../shared/constants/booking-status-options.const';
 
 @Component({
   selector: 'app-camper-bookings',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, NavbarComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterLink,
+    NavbarComponent,
+    EmptyStateComponent,
+    PaginationComponent,
+    StatusBadgeComponent,
+    CurrencyIdrPipe
+  ],
   templateUrl: './camper-bookings.component.html',
   styleUrl: './camper-bookings.component.scss'
 })
@@ -25,13 +39,7 @@ export class CamperBookingsComponent implements OnInit {
   isLoading = false;
   errorMessage = '';
 
-  statusOptions = [
-    { label: 'All statuses', value: 'ALL' },
-    { label: 'Payment pending', value: 'PAYMENT_PENDING' },
-    { label: 'Confirmed', value: 'CONFIRMED' },
-    { label: 'Cancelled', value: 'CANCELLED' },
-    { label: 'Completed', value: 'COMPLETED' }
-  ];
+  statusOptions = BOOKING_STATUS_OPTIONS;
 
   ngOnInit(): void {
     this.loadBookings(0);
@@ -59,33 +67,6 @@ export class CamperBookingsComponent implements OnInit {
           this.isLoading = false;
         }
       });
-  }
-
-  nextPage(): void {
-    if (this.page.number + 1 >= this.page.totalPages) return;
-    this.loadBookings(this.page.number + 1);
-  }
-
-  prevPage(): void {
-    if (this.page.number <= 0) return;
-    this.loadBookings(this.page.number - 1);
-  }
-
-  formatStatus(status?: BookingStatus | null): string {
-    if (!status) return 'Unknown';
-    return status.replace('_', ' ').toLowerCase().replace(/^\w/, (c) => c.toUpperCase());
-  }
-
-  statusClass(status?: BookingStatus | null): string {
-    if (!status) return 'status-unknown';
-    return `status-${status.toLowerCase()}`;
-  }
-
-  formatCurrency(value?: number | null): string {
-    if (value === null || value === undefined) {
-      return 'Rp -';
-    }
-    return `Rp ${Number(value).toLocaleString('id-ID')}`;
   }
 
   trackById(_index: number, booking: CamperBooking) {

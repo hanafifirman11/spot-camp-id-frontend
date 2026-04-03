@@ -19,3 +19,9 @@ dist/
 # Env
 .env
 .env.local
+
+# Test coverage
+coverage/
+
+# Agent
+AGENT.md

@@ -55,7 +55,7 @@
           </td>
           <td>{{ user.role || '-' }}</td>
           <td>
-            <span class="status" [ngClass]="(user.status || '').toLowerCase()">{{ user.status || '-' }}</span>
+            <app-status-badge [status]="user.status"></app-status-badge>
           </td>
           <td>
             <div class="name">{{ user.businessName || '-' }}</div>
@@ -67,14 +67,16 @@
       </tbody>
     </table>
 
-    <div class="pagination">
-      <button (click)="prevPage()" [disabled]="page.number <= 0">Prev</button>
-      <span>Page {{ page.number + 1 }} of {{ page.totalPages || 1 }}</span>
-      <button (click)="nextPage()" [disabled]="page.number + 1 >= page.totalPages">Next</button>
-    </div>
+    <app-pagination
+      [pageNumber]="page.number"
+      [totalPages]="page.totalPages || 1"
+      prevLabel="Prev"
+      (pageChange)="loadUsers($event)">
+    </app-pagination>
   </div>
 
-  <div class="empty" *ngIf="!isLoading && users.length === 0 && !errorMessage">
-    No users match the current filters.
-  </div>
+  <app-empty-state
+    *ngIf="!isLoading && users.length === 0 && !errorMessage"
+    message="No users match the current filters.">
+  </app-empty-state>
 </section>

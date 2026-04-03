@@ -28,11 +28,4 @@ export interface SaleItem {
   };
 }
 
-export interface GroupedItem {
-  key: string;
-  name: string;
-  type: string;
-  quantity: number;
-  subtotal: number;
-  nightsLabel?: string;
-}
+export { GroupedItem } from '../../../../shared/models/grouped-item.model';

@@ -21,26 +21,22 @@
   <div class="state loading" *ngIf="isLoading">Loading campsites...</div>
   <div class="state error" *ngIf="!isLoading && errorMessage">{{ errorMessage }}</div>
 
-  <div class="state empty" *ngIf="!isLoading && !errorMessage && campsites.length === 0">
-    No campsites yet. Create your first listing to get started.
-  </div>
+  <app-empty-state
+    *ngIf="!isLoading && !errorMessage && campsites.length === 0"
+    message="No campsites yet. Create your first listing to get started.">
+  </app-empty-state>
 
   <div class="grid" *ngIf="!isLoading && !errorMessage && campsites.length > 0">
     <article class="card" *ngFor="let camp of campsites; trackBy: trackById">
       <div class="card-image" [style.background-image]="getImageStyle(camp.coverImageUrl)">
-        <span class="status"
-              [class.active]="camp.status === 'ACTIVE'"
-              [class.inactive]="camp.status === 'INACTIVE'"
-              [class.suspended]="camp.status === 'SUSPENDED'">
-          {{ formatStatus(camp.status) }}
-        </span>
+        <app-status-badge class="status" [status]="camp.status"></app-status-badge>
         <div class="placeholder" *ngIf="!camp.coverImageUrl">No cover image</div>
       </div>
       <div class="card-body">
         <div class="title-row">
           <h3>{{ camp.name || 'Untitled campsite' }}</h3>
           <span class="price" *ngIf="camp.basePrice !== undefined && camp.basePrice !== null">
-            Rp {{ camp.basePrice | number }}
+            {{ camp.basePrice | currencyIdr }}
           </span>
         </div>
         <div class="code" *ngIf="camp.code">Code {{ camp.code }}</div>
@@ -57,14 +53,14 @@
             *ngIf="canEdit && camp.status === 'ACTIVE'"
             type="button"
             class="secondary"
-            (click)="deactivateCampsite(camp)">
+            (click)="openDeactivateDialog(camp)">
             Deactivate
           </button>
           <button
             *ngIf="canEdit && camp.status === 'INACTIVE'"
             type="button"
             class="secondary"
-            (click)="activateCampsite(camp)">
+            (click)="openActivateDialog(camp)">
             Activate
           </button>
         </div>
@@ -72,9 +68,22 @@
     </article>
   </div>
 
-  <div class="pagination" *ngIf="!isLoading && page.totalPages > 1">
-    <button type="button" (click)="prevPage()" [disabled]="page.number === 0">Previous</button>
-    <span>Page {{ page.number + 1 }} of {{ page.totalPages }}</span>
-    <button type="button" (click)="nextPage()" [disabled]="page.number + 1 >= page.totalPages">Next</button>
-  </div>
+  <app-pagination
+    *ngIf="!isLoading"
+    [pageNumber]="page.number"
+    [totalPages]="page.totalPages"
+    (pageChange)="loadCampsites($event)">
+  </app-pagination>
+
+  <app-confirm-dialog
+    [open]="!!pendingStatusChange"
+    [title]="pendingStatusChange?.nextStatus === 'ACTIVE' ? 'Activate campsite' : 'Deactivate campsite'"
+    [message]="(pendingStatusChange?.nextStatus === 'ACTIVE' ? 'Activate ' : 'Deactivate ') + (pendingStatusChange?.campsite?.name || 'this campsite') + '?'"
+    [confirmText]="pendingStatusChange?.nextStatus === 'ACTIVE' ? 'Activate' : 'Deactivate'"
+    cancelText="Cancel"
+    [tone]="pendingStatusChange?.nextStatus === 'ACTIVE' ? 'default' : 'danger'"
+    [busy]="statusChangeInProgress"
+    (closed)="closeStatusDialog()"
+    (confirmed)="confirmStatusChange()">
+  </app-confirm-dialog>
 </section>

@@ -50,14 +50,15 @@
   <div class="state loading" *ngIf="isLoadingCampsites">Loading campsites...</div>
   <div class="state error" *ngIf="!isLoadingCampsites && errorMessage">{{ errorMessage }}</div>
 
-  <div class="state empty" *ngIf="!isLoadingCampsites && !errorMessage && campsites.length === 0">
-    No campsites yet. Create a campsite to unlock reporting.
-  </div>
+  <app-empty-state
+    *ngIf="!isLoadingCampsites && !errorMessage && campsites.length === 0"
+    message="No campsites yet. Create a campsite to unlock reporting.">
+  </app-empty-state>
 
   <div class="cards" *ngIf="!isLoadingCampsites && dashboard as data">
     <article class="card">
       <p>Total revenue</p>
-      <h3>{{ formatCurrency(data.revenueSummary?.totalRevenue ?? 0) }}</h3>
+      <h3>{{ data.revenueSummary?.totalRevenue ?? 0 | currencyIdr }}</h3>
       <span>Conversion {{ formatPercent(data.revenueSummary?.conversionRate ?? 0) }}</span>
     </article>
     <article class="card">
@@ -73,20 +74,23 @@
     <article class="card">
       <p>Unique customers</p>
       <h3>{{ data.customerAnalytics?.uniqueCustomers ?? 0 }}</h3>
-      <span>Avg value {{ formatCurrency(data.customerAnalytics?.averageBookingValue ?? 0) }}</span>
+      <span>Avg value {{ data.customerAnalytics?.averageBookingValue ?? 0 | currencyIdr }}</span>
     </article>
   </div>
 
   <div class="state loading" *ngIf="!isLoadingCampsites && isLoading">Loading booking reports...</div>
-  <div class="state empty" *ngIf="!isLoadingCampsites && !isLoading && reports.length === 0 && campsites.length > 0">
-    No booking reports found for the selected filters.
-  </div>
+  <app-empty-state
+    *ngIf="!isLoadingCampsites && !isLoading && reports.length === 0 && campsites.length > 0"
+    message="No booking reports found for the selected filters.">
+  </app-empty-state>
 
-  <div class="pagination top" *ngIf="!isLoadingCampsites && !isLoading && page.totalPages > 1">
-    <button type="button" (click)="prevPage()" [disabled]="page.number === 0">Previous</button>
-    <span>Page {{ page.number + 1 }} of {{ page.totalPages }}</span>
-    <button type="button" (click)="nextPage()" [disabled]="page.number + 1 >= page.totalPages">Next</button>
-  </div>
+  <app-pagination
+    *ngIf="!isLoadingCampsites && !isLoading"
+    [pageNumber]="page.number"
+    [totalPages]="page.totalPages"
+    [containerClass]="'top'"
+    (pageChange)="loadReports($event)">
+  </app-pagination>
 
   <div class="table" *ngIf="!isLoadingCampsites && !isLoading && reports.length > 0">
     <div class="row header">
@@ -104,15 +108,18 @@
       <span class="cell" data-label="Guest">{{ report.userEmail || 'Guest' }}</span>
       <span class="cell" data-label="Spot">{{ report.spotName || report.spotId || '-' }}</span>
       <span class="cell" data-label="Dates">{{ report.checkInDate || '-' }} → {{ report.checkOutDate || '-' }}</span>
-      <span class="cell status" data-label="Status" [ngClass]="statusClass(report.status)">{{ formatStatus(report.status) }}</span>
-      <span class="cell" data-label="Total">{{ formatCurrency(report.totalAmount) }}</span>
+      <span class="cell status" data-label="Status">
+        <app-status-badge [status]="report.status"></app-status-badge>
+      </span>
+      <span class="cell" data-label="Total">{{ report.totalAmount | currencyIdr }}</span>
       <span class="cell" data-label="Created">{{ report.createdAt ? (report.createdAt | date:'mediumDate') : '-' }}</span>
     </div>
   </div>
 
-  <div class="pagination" *ngIf="!isLoadingCampsites && !isLoading && page.totalPages > 1">
-    <button type="button" (click)="prevPage()" [disabled]="page.number === 0">Previous</button>
-    <span>Page {{ page.number + 1 }} of {{ page.totalPages }}</span>
-    <button type="button" (click)="nextPage()" [disabled]="page.number + 1 >= page.totalPages">Next</button>
-  </div>
+  <app-pagination
+    *ngIf="!isLoadingCampsites && !isLoading"
+    [pageNumber]="page.number"
+    [totalPages]="page.totalPages"
+    (pageChange)="loadReports($event)">
+  </app-pagination>
 </section>

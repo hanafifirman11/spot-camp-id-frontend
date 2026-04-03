@@ -53,9 +53,7 @@
             <div class="muted">Email: {{ business.email || '-' }}</div>
           </td>
           <td>
-            <span class="status" [class.active]="business.status === 'ACTIVE'" [class.inactive]="business.status === 'INACTIVE'">
-              {{ business.status || 'UNKNOWN' }}
-            </span>
+            <app-status-badge [status]="business.status"></app-status-badge>
           </td>
           <td>
             <strong>{{ business.activeCampsites ?? 0 }}</strong> / {{ business.totalCampsites ?? 0 }}
@@ -68,14 +66,16 @@
       </tbody>
     </table>
 
-    <div class="pagination">
-      <button type="button" (click)="prevPage()" [disabled]="page.number === 0">Prev</button>
-      <span>Page {{ page.number + 1 }} of {{ page.totalPages || 1 }}</span>
-      <button type="button" (click)="nextPage()" [disabled]="page.number + 1 >= page.totalPages">Next</button>
-    </div>
+    <app-pagination
+      [pageNumber]="page.number"
+      [totalPages]="page.totalPages || 1"
+      prevLabel="Prev"
+      (pageChange)="loadBusinesses($event)">
+    </app-pagination>
   </div>
 
-  <div class="empty" *ngIf="!isLoading && !businesses.length && !errorMessage">
-    No businesses found for the current filter.
-  </div>
+  <app-empty-state
+    *ngIf="!isLoading && !businesses.length && !errorMessage"
+    message="No businesses found for the current filter.">
+  </app-empty-state>
 </section>

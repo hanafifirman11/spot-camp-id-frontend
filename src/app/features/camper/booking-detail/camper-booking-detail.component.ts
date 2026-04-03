@@ -12,11 +12,13 @@ import {
   RentalItem,
   SaleItem
 } from './models/camper-booking-detail.model';
+import { CurrencyIdrPipe } from '../../../shared/pipes/currency-idr.pipe';
+import { ItemGroupingService } from '../../../shared/services/item-grouping.service';
 
 @Component({
   selector: 'app-camper-booking-detail',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, NavbarComponent],
+  imports: [CommonModule, FormsModule, RouterLink, NavbarComponent, CurrencyIdrPipe],
   templateUrl: './camper-booking-detail.component.html',
   styleUrl: './camper-booking-detail.component.scss'
 })
@@ -25,6 +27,7 @@ export class CamperBookingDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private http = inject(HttpClient);
+  private itemGroupingService = inject(ItemGroupingService);
 
   booking?: CamperBooking;
   groupedItems: GroupedItem[] = [];
@@ -395,13 +398,6 @@ export class CamperBookingDetailComponent implements OnInit {
       });
   }
 
-  formatCurrency(value?: number | null): string {
-    if (value === null || value === undefined) {
-      return 'Rp -';
-    }
-    return `Rp ${Number(value).toLocaleString('id-ID')}`;
-  }
-
   getProofUrl(): string | null {
     const url = this.booking?.paymentProofUrl;
     if (!url) return null;
@@ -420,40 +416,7 @@ export class CamperBookingDetailComponent implements OnInit {
   }
 
   private buildGroupedItems(booking: CamperBooking): GroupedItem[] {
-    const items = booking.items ?? [];
-    const grouped = new Map<string, GroupedItem>();
-    const nightsLabel = this.buildNightsLabel(booking.nights);
-
-    items.forEach((item) => {
-      const key = `${item.productId ?? item.productName ?? 'item'}-${item.productType ?? 'product'}`;
-      const subtotal = Number(item.subtotal ?? 0);
-      const quantity = Number(item.quantity ?? 0);
-      const name = item.productName || `Product #${item.productId}`;
-      const type = item.productType || 'Product';
-
-      if (!grouped.has(key)) {
-        grouped.set(key, {
-          key,
-          name,
-          type,
-          quantity,
-          subtotal,
-          nightsLabel: type === 'RENTAL_SPOT' ? nightsLabel : undefined
-        });
-      } else {
-        const existing = grouped.get(key)!;
-        existing.quantity += quantity;
-        existing.subtotal += subtotal;
-      }
-    });
-
-    return Array.from(grouped.values());
-  }
-
-  private buildNightsLabel(nights?: number | null): string | undefined {
-    if (!nights || nights <= 0) return undefined;
-    const days = nights + 1;
-    return `${days} hari ${nights} malam`;
+    return this.itemGroupingService.buildGroupedItems(booking);
   }
 
   openProofModal() {

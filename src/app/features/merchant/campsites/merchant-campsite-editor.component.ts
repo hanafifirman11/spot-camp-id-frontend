@@ -11,11 +11,12 @@ import {
   MerchantCampsiteService
 } from '../services/merchant-campsite.service';
 import { AmenityGroup, CampsiteFormValue } from './models/merchant-campsite-editor.model';
+import { StatusBadgeComponent } from '../../../shared/components/status-badge/status-badge.component';
 
 @Component({
   selector: 'app-merchant-campsite-editor',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterLink, StatusBadgeComponent],
   templateUrl: './merchant-campsite-editor.component.html',
   styleUrl: './merchant-campsite-editor.component.scss'
 })

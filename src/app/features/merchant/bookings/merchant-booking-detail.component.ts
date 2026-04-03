@@ -4,22 +4,25 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import {
   BookingItem,
-  BookingStatus,
   MerchantBooking,
   MerchantBookingService
 } from '../services/merchant-booking.service';
 import { GroupedItem } from './models/merchant-booking-detail.model';
+import { ItemGroupingService } from '../../../shared/services/item-grouping.service';
+import { StatusBadgeComponent } from '../../../shared/components/status-badge/status-badge.component';
+import { CurrencyIdrPipe } from '../../../shared/pipes/currency-idr.pipe';
 
 @Component({
   selector: 'app-merchant-booking-detail',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [CommonModule, RouterLink, FormsModule, StatusBadgeComponent, CurrencyIdrPipe],
   templateUrl: './merchant-booking-detail.component.html',
   styleUrl: './merchant-booking-detail.component.scss'
 })
 export class MerchantBookingDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private bookingService = inject(MerchantBookingService);
+  private itemGroupingService = inject(ItemGroupingService);
 
   booking?: MerchantBooking;
   groupedItems: GroupedItem[] = [];
@@ -78,23 +81,6 @@ export class MerchantBookingDetailComponent implements OnInit {
         this.isLoading = false;
       }
     });
-  }
-
-  formatStatus(status?: BookingStatus | null): string {
-    if (!status) return 'Unknown';
-    return status.replace('_', ' ').toLowerCase().replace(/^\w/, (c) => c.toUpperCase());
-  }
-
-  statusClass(status?: BookingStatus | null): string {
-    if (!status) return 'status-unknown';
-    return `status-${status.toLowerCase()}`;
-  }
-
-  formatCurrency(value?: number | null): string {
-    if (value === null || value === undefined) {
-      return 'Rp -';
-    }
-    return `Rp ${Number(value).toLocaleString('id-ID')}`;
   }
 
   formatGuest(): string {
@@ -220,39 +206,6 @@ export class MerchantBookingDetailComponent implements OnInit {
   }
 
   private buildGroupedItems(booking: MerchantBooking): GroupedItem[] {
-    const items = booking.items ?? [];
-    const grouped = new Map<string, GroupedItem>();
-    const nightsLabel = this.buildNightsLabel(booking.nights);
-
-    items.forEach((item) => {
-      const key = `${item.productId ?? item.productName ?? 'item'}-${item.productType ?? 'product'}`;
-      const subtotal = Number(item.subtotal ?? 0);
-      const quantity = Number(item.quantity ?? 0);
-      const name = item.productName || `Product #${item.productId}`;
-      const type = item.productType || 'Product';
-
-      if (!grouped.has(key)) {
-        grouped.set(key, {
-          key,
-          name,
-          type,
-          quantity,
-          subtotal,
-          nightsLabel: type === 'RENTAL_SPOT' ? nightsLabel : undefined
-        });
-      } else {
-        const existing = grouped.get(key)!;
-        existing.quantity += quantity;
-        existing.subtotal += subtotal;
-      }
-    });
-
-    return Array.from(grouped.values());
-  }
-
-  private buildNightsLabel(nights?: number | null): string | undefined {
-    if (!nights || nights <= 0) return undefined;
-    const days = nights + 1;
-    return `${days} hari ${nights} malam`;
+    return this.itemGroupingService.buildGroupedItems(booking);
   }
 }

@@ -20,7 +20,7 @@
         <h2>{{ formatGuest() }}</h2>
         <p class="meta">{{ booking.contactEmail || 'No email' }} · {{ booking.contactPhone || 'No phone' }}</p>
       </div>
-      <span class="status" [ngClass]="statusClass(booking.status)">{{ formatStatus(booking.status) }}</span>
+      <app-status-badge class="status" [status]="booking.status" size="md"></app-status-badge>
     </div>
 
     <div class="panel grid">
@@ -32,11 +32,11 @@
       </div>
       <div>
         <h3>Payment</h3>
-        <p>Total: {{ formatCurrency(booking.totalAmount) }}</p>
+        <p>Total: {{ booking.totalAmount | currencyIdr }}</p>
         <p>Method: {{ booking.paymentMethod || '-' }}</p>
         <p>Invoice: {{ booking.invoiceNumber || '-' }}</p>
         <p *ngIf="booking.paymentBankName">Bank: {{ booking.paymentBankName }} ({{ booking.paymentBankAccountNumber }})</p>
-        <p *ngIf="booking.paymentAmount">Transfer: {{ formatCurrency(booking.paymentAmount) }}</p>
+        <p *ngIf="booking.paymentAmount">Transfer: {{ booking.paymentAmount | currencyIdr }}</p>
         <p *ngIf="booking.paymentUniqueCode">Unique code: {{ booking.paymentUniqueCode }}</p>
         <p *ngIf="booking.paymentProofStatus">Proof status: {{ booking.paymentProofStatus }}</p>
         <p *ngIf="booking.paymentVerificationNote">Note: {{ booking.paymentVerificationNote }}</p>
@@ -77,7 +77,7 @@
               <span *ngIf="!item.nightsLabel">· Qty {{ item.quantity }}</span>
             </div>
           </div>
-          <div class="item-price">{{ formatCurrency(item.subtotal) }}</div>
+          <div class="item-price">{{ item.subtotal | currencyIdr }}</div>
         </div>
       </div>
     </div>

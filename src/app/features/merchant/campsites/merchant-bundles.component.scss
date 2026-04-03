@@ -147,31 +147,6 @@
   font-weight: 700;
 }
 
-.pagination {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  padding: 12px;
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 14px;
-  box-shadow: var(--shadow-soft);
-}
-
-.pagination button {
-  border: none;
-  background: rgba(23, 53, 42, 0.12);
-  color: #2c3e3c;
-  padding: 8px 12px;
-  border-radius: 10px;
-  font-weight: 600;
-}
-
-.pagination button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
 @media (max-width: 860px) {
   .header {
     flex-direction: column;

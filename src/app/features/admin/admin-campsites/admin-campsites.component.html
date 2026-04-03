@@ -55,23 +55,25 @@
             <div class="muted">{{ campsite.businessCode || ('ID ' + campsite.businessId) }}</div>
           </td>
           <td>
-            <span class="status" [ngClass]="(campsite.status || '').toLowerCase()">{{ campsite.status || '-' }}</span>
+            <app-status-badge [status]="campsite.status"></app-status-badge>
           </td>
           <td>{{ campsite.rating ?? '-' }}</td>
-          <td>{{ campsite.minPrice ? ('Rp ' + (campsite.minPrice | number)) : '-' }}</td>
+          <td>{{ campsite.minPrice | currencyIdr }}</td>
           <td>{{ campsite.createdAt ? (campsite.createdAt | date:'yyyy-MM-dd') : '-' }}</td>
         </tr>
       </tbody>
     </table>
 
-    <div class="pagination">
-      <button (click)="prevPage()" [disabled]="page.number <= 0">Prev</button>
-      <span>Page {{ page.number + 1 }} of {{ page.totalPages || 1 }}</span>
-      <button (click)="nextPage()" [disabled]="page.number + 1 >= page.totalPages">Next</button>
-    </div>
+    <app-pagination
+      [pageNumber]="page.number"
+      [totalPages]="page.totalPages || 1"
+      prevLabel="Prev"
+      (pageChange)="loadCampsites($event)">
+    </app-pagination>
   </div>
 
-  <div class="empty" *ngIf="!isLoading && campsites.length === 0 && !errorMessage">
-    No campsites match the current filters.
-  </div>
+  <app-empty-state
+    *ngIf="!isLoading && campsites.length === 0 && !errorMessage"
+    message="No campsites match the current filters.">
+  </app-empty-state>
 </section>

@@ -8,16 +8,28 @@ import {
 } from '../services/merchant-campsite.service';
 import {
   BookingListResponse,
-  BookingStatus,
   MerchantBooking,
   MerchantBookingService
 } from '../services/merchant-booking.service';
 import { FilterOption, StatusFilter } from './models/merchant-bookings.model';
+import { BOOKING_STATUS_OPTIONS } from '../../../shared/constants/booking-status-options.const';
+import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
+import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
+import { StatusBadgeComponent } from '../../../shared/components/status-badge/status-badge.component';
+import { CurrencyIdrPipe } from '../../../shared/pipes/currency-idr.pipe';
 
 @Component({
   selector: 'app-merchant-bookings',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterLink,
+    EmptyStateComponent,
+    PaginationComponent,
+    StatusBadgeComponent,
+    CurrencyIdrPipe
+  ],
   templateUrl: './merchant-bookings.component.html',
   styleUrl: './merchant-bookings.component.scss'
 })
@@ -39,13 +51,7 @@ export class MerchantBookingsComponent implements OnInit {
   isLoadingCampsites = false;
   errorMessage = '';
 
-  statusOptions: FilterOption<StatusFilter>[] = [
-    { label: 'All statuses', value: 'ALL' },
-    { label: 'Payment pending', value: 'PAYMENT_PENDING' },
-    { label: 'Confirmed', value: 'CONFIRMED' },
-    { label: 'Cancelled', value: 'CANCELLED' },
-    { label: 'Completed', value: 'COMPLETED' }
-  ];
+  statusOptions = BOOKING_STATUS_OPTIONS;
 
   ngOnInit() {
     this.loadCampsites();
@@ -99,37 +105,10 @@ export class MerchantBookingsComponent implements OnInit {
       });
   }
 
-  nextPage() {
-    if (this.page.number + 1 >= this.page.totalPages) return;
-    this.loadBookings(this.page.number + 1);
-  }
-
-  prevPage() {
-    if (this.page.number <= 0) return;
-    this.loadBookings(this.page.number - 1);
-  }
-
   getCampsiteName(): string {
     if (!this.selectedCampsiteId) return 'Select a campsite';
     const campsite = this.campsites.find((item) => item.id === this.selectedCampsiteId);
     return campsite?.name ?? `Campsite #${this.selectedCampsiteId}`;
-  }
-
-  formatStatus(status?: BookingStatus | null): string {
-    if (!status) return 'Unknown';
-    return status.replace('_', ' ').toLowerCase().replace(/^\w/, (c) => c.toUpperCase());
-  }
-
-  statusClass(status?: BookingStatus | null): string {
-    if (!status) return 'status-unknown';
-    return `status-${status.toLowerCase()}`;
-  }
-
-  formatCurrency(value?: number | null): string {
-    if (value === null || value === undefined) {
-      return 'Rp -';
-    }
-    return `Rp ${Number(value).toLocaleString('id-ID')}`;
   }
 
   getGuestLabel(booking: MerchantBooking): string {

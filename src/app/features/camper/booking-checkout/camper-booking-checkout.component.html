@@ -23,7 +23,7 @@
 
       <div class="row">
         <span>Amount to transfer</span>
-        <strong>{{ formatCurrency(booking.paymentAmount) }}</strong>
+        <strong>{{ booking.paymentAmount | currencyIdr }}</strong>
       </div>
       <div class="row" *ngIf="booking.paymentUniqueCode !== null && booking.paymentUniqueCode !== undefined">
         <span>Unique code</span>

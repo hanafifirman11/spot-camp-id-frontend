@@ -9,11 +9,25 @@ import {
 } from '../services/merchant-campsite.service';
 import { RoleService } from '../../../core/services/role.service';
 import { StatusFilter, StatusOption } from './models/merchant-campsites.model';
+import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
+import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
+import { StatusBadgeComponent } from '../../../shared/components/status-badge/status-badge.component';
+import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { CurrencyIdrPipe } from '../../../shared/pipes/currency-idr.pipe';
 
 @Component({
   selector: 'app-merchant-campsites',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterLink,
+    EmptyStateComponent,
+    PaginationComponent,
+    StatusBadgeComponent,
+    ConfirmDialogComponent,
+    CurrencyIdrPipe
+  ],
   templateUrl: './merchant-campsites.component.html',
   styleUrl: './merchant-campsites.component.scss'
 })
@@ -26,6 +40,8 @@ export class MerchantCampsitesComponent implements OnInit {
   statusFilter: StatusFilter = 'ALL';
   isLoading = false;
   errorMessage = '';
+  pendingStatusChange: { campsite: MerchantCampsiteResponse; nextStatus: 'ACTIVE' | 'INACTIVE' } | null = null;
+  statusChangeInProgress = false;
 
   canEdit = this.roleService.canEditMasterData();
 
@@ -62,38 +78,35 @@ export class MerchantCampsitesComponent implements OnInit {
     });
   }
 
-  nextPage() {
-    if (this.page.number + 1 >= this.page.totalPages) return;
-    this.loadCampsites(this.page.number + 1);
-  }
-
-  prevPage() {
-    if (this.page.number <= 0) return;
-    this.loadCampsites(this.page.number - 1);
-  }
-
-  deactivateCampsite(campsite: MerchantCampsiteResponse) {
+  openDeactivateDialog(campsite: MerchantCampsiteResponse) {
     if (!campsite.id) return;
-    const confirmMessage = `Deactivate ${campsite.name || 'this campsite'}?`;
-    if (!window.confirm(confirmMessage)) return;
-
-    this.campsiteService.updateCampsiteStatus(campsite.id, 'INACTIVE').subscribe({
-      next: () => this.loadCampsites(this.page.number),
-      error: () => {
-        this.errorMessage = 'Unable to deactivate campsite. Please try again.';
-      }
-    });
+    this.pendingStatusChange = { campsite, nextStatus: 'INACTIVE' };
   }
 
-  activateCampsite(campsite: MerchantCampsiteResponse) {
+  openActivateDialog(campsite: MerchantCampsiteResponse) {
     if (!campsite.id) return;
-    const confirmMessage = `Activate ${campsite.name || 'this campsite'}?`;
-    if (!window.confirm(confirmMessage)) return;
+    this.pendingStatusChange = { campsite, nextStatus: 'ACTIVE' };
+  }
 
-    this.campsiteService.updateCampsiteStatus(campsite.id, 'ACTIVE').subscribe({
-      next: () => this.loadCampsites(this.page.number),
+  closeStatusDialog() {
+    if (this.statusChangeInProgress) return;
+    this.pendingStatusChange = null;
+  }
+
+  confirmStatusChange() {
+    const pending = this.pendingStatusChange;
+    if (!pending?.campsite?.id) return;
+
+    this.statusChangeInProgress = true;
+    this.campsiteService.updateCampsiteStatus(pending.campsite.id, pending.nextStatus).subscribe({
+      next: () => {
+        this.pendingStatusChange = null;
+        this.statusChangeInProgress = false;
+        this.loadCampsites(this.page.number);
+      },
       error: () => {
-        this.errorMessage = 'Unable to activate campsite. Please try again.';
+        this.errorMessage = 'Unable to update campsite status. Please try again.';
+        this.statusChangeInProgress = false;
       }
     });
   }
@@ -116,11 +129,6 @@ export class MerchantCampsitesComponent implements OnInit {
       return `/${normalized}`;
     }
     return `/api/v1/${normalized}`;
-  }
-
-  formatStatus(status?: string | null): string {
-    if (!status) return 'Unknown';
-    return status.charAt(0) + status.slice(1).toLowerCase();
   }
 
   trackById(_index: number, campsite: MerchantCampsiteResponse) {

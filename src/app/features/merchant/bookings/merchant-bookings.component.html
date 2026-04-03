@@ -37,14 +37,16 @@
   <div class="state loading" *ngIf="isLoadingCampsites">Loading campsites...</div>
   <div class="state error" *ngIf="!isLoadingCampsites && errorMessage">{{ errorMessage }}</div>
 
-  <div class="state empty" *ngIf="!isLoadingCampsites && !errorMessage && campsites.length === 0">
-    No campsites yet. Create a campsite to start receiving bookings.
-  </div>
+  <app-empty-state
+    *ngIf="!isLoadingCampsites && !errorMessage && campsites.length === 0"
+    message="No campsites yet. Create a campsite to start receiving bookings.">
+  </app-empty-state>
 
   <div class="state loading" *ngIf="!isLoadingCampsites && isLoading">Loading bookings...</div>
-  <div class="state empty" *ngIf="!isLoadingCampsites && !isLoading && bookings.length === 0 && campsites.length > 0">
-    No bookings found for the selected filters.
-  </div>
+  <app-empty-state
+    *ngIf="!isLoadingCampsites && !isLoading && bookings.length === 0 && campsites.length > 0"
+    message="No bookings found for the selected filters.">
+  </app-empty-state>
 
   <div class="table" *ngIf="!isLoadingCampsites && !isLoading && bookings.length > 0">
     <div class="row header">
@@ -62,15 +64,18 @@
       <span class="cell" data-label="Guest">{{ getGuestLabel(booking) }}</span>
       <span class="cell" data-label="Spot">{{ getSpotLabel(booking) }}</span>
       <span class="cell" data-label="Dates">{{ booking.checkInDate || '-' }} → {{ booking.checkOutDate || '-' }}</span>
-      <span class="cell status" data-label="Status" [ngClass]="statusClass(booking.status)">{{ formatStatus(booking.status) }}</span>
-      <span class="cell" data-label="Total">{{ formatCurrency(booking.totalAmount) }}</span>
+      <span class="cell status" data-label="Status">
+        <app-status-badge [status]="booking.status"></app-status-badge>
+      </span>
+      <span class="cell" data-label="Total">{{ booking.totalAmount | currencyIdr }}</span>
       <a class="ghost" data-label="Action" [routerLink]="['/merchant/bookings', booking.id]" [queryParams]="{ campsiteId: selectedCampsiteId }">View</a>
     </div>
   </div>
 
-  <div class="pagination" *ngIf="!isLoadingCampsites && !isLoading && page.totalPages > 1">
-    <button type="button" (click)="prevPage()" [disabled]="page.number === 0">Previous</button>
-    <span>Page {{ page.number + 1 }} of {{ page.totalPages }}</span>
-    <button type="button" (click)="nextPage()" [disabled]="page.number + 1 >= page.totalPages">Next</button>
-  </div>
+  <app-pagination
+    *ngIf="!isLoadingCampsites && !isLoading"
+    [pageNumber]="page.number"
+    [totalPages]="page.totalPages"
+    (pageChange)="loadBookings($event)">
+  </app-pagination>
 </section>

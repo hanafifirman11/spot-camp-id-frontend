@@ -1,0 +1,5 @@
+<nav class="pagination-nav" [ngClass]="containerClass" *ngIf="hasPagination">
+  <button type="button" (click)="goPrev()" [disabled]="prevDisabled">{{ prevLabel }}</button>
+  <span>Page {{ pageNumber + 1 }} of {{ totalPages }}</span>
+  <button type="button" (click)="goNext()" [disabled]="nextDisabled">{{ nextLabel }}</button>
+</nav>

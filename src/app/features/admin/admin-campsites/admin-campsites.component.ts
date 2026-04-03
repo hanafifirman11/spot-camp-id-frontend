@@ -2,11 +2,22 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AdminCampsiteSummary, AdminService, CampsiteStatus, PageMeta } from '../services/admin.service';
+import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
+import { StatusBadgeComponent } from '../../../shared/components/status-badge/status-badge.component';
+import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
+import { CurrencyIdrPipe } from '../../../shared/pipes/currency-idr.pipe';
 
 @Component({
   selector: 'app-admin-campsites',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    PaginationComponent,
+    StatusBadgeComponent,
+    EmptyStateComponent,
+    CurrencyIdrPipe
+  ],
   templateUrl: './admin-campsites.component.html',
   styleUrl: './admin-campsites.component.scss'
 })
@@ -58,15 +69,5 @@ export class AdminCampsitesComponent implements OnInit {
     this.statusFilter = '';
     this.businessId = null;
     this.loadCampsites(0);
-  }
-
-  nextPage(): void {
-    if (this.page.number + 1 >= this.page.totalPages) return;
-    this.loadCampsites(this.page.number + 1);
-  }
-
-  prevPage(): void {
-    if (this.page.number <= 0) return;
-    this.loadCampsites(this.page.number - 1);
   }
 }
