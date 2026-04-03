@@ -11,14 +11,7 @@ import {
   ProductType
 } from '../services/merchant-product.service';
 import { RoleService } from '../../../core/services/role.service';
-
-type StatusFilter = 'ALL' | ProductStatus;
-type TypeFilter = 'ALL' | ProductType;
-
-interface FilterOption<T> {
-  label: string;
-  value: T;
-}
+import { FilterOption, StatusFilter, TypeFilter } from './models/merchant-products.model';
 
 @Component({
   selector: 'app-merchant-products',

@@ -14,31 +14,12 @@ import {
   ProductsService,
   SpotDefinition
 } from '../../../core/api-v1';
-
-interface UploadBackgroundResponse {
-  url?: string;
-  message?: string;
-}
-
-interface MapSummary {
-  id?: number;
-  mapCode?: string;
-  mapName?: string;
-  productIds?: number[];
-  imageWidth?: number;
-  imageHeight?: number;
-  backgroundImageUrl?: string;
-}
-
-interface SpotShape {
-  polygon: Konva.Line;
-  label?: Konva.Text;
-}
-
-interface StagePoint {
-  x: number;
-  y: number;
-}
+import {
+  MapSummary,
+  SpotShape,
+  StagePoint,
+  UploadBackgroundResponse
+} from './models/merchant-map-editor.model';
 
 @Component({
   selector: 'app-merchant-map-editor',

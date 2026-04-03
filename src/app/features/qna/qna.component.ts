@@ -2,14 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NavbarComponent } from '../../layout/navbar.component';
-
-interface QnaItem {
-  id: string;
-  category: string;
-  question: string;
-  answer: string;
-  tags?: string[];
-}
+import { QnaItem } from './models/qna.model';
 
 @Component({
   selector: 'app-qna',

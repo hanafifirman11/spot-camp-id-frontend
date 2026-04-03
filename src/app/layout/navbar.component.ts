@@ -4,16 +4,7 @@ import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { Subscription, interval, of } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
 import { NotificationService } from '../features/notifications/notifications.service';
-
-interface StoredUserInfo {
-  id?: number;
-  email?: string;
-  firstName?: string;
-  lastName?: string;
-  role?: string;
-  businessName?: string;
-  businessCode?: string;
-}
+import { StoredUserInfo } from './models/layout.model';
 
 @Component({
   selector: 'app-navbar',

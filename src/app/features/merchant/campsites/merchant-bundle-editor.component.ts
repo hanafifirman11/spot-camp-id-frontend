@@ -13,13 +13,7 @@ import {
   ProductStatus,
   ProductType
 } from '../services/merchant-product.service';
-
-interface BundleComponentDraft {
-  productId: number;
-  quantity: number;
-  productName?: string;
-  productType?: ProductType;
-}
+import { BundleComponentDraft } from './models/merchant-bundle-editor.model';
 
 @Component({
   selector: 'app-merchant-bundle-editor',

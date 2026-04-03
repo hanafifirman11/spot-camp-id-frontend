@@ -12,13 +12,7 @@ import {
   MerchantBooking,
   MerchantBookingService
 } from '../services/merchant-booking.service';
-
-type StatusFilter = 'ALL' | BookingStatus;
-
-interface FilterOption<T> {
-  label: string;
-  value: T;
-}
+import { FilterOption, StatusFilter } from './models/merchant-bookings.model';
 
 @Component({
   selector: 'app-merchant-bookings',

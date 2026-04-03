@@ -9,94 +9,19 @@ import { catchError, concatMap, forkJoin, from, last, of, switchMap } from 'rxjs
 import Konva from 'konva';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
-
-type SpotAvailabilityStatus = 'AVAILABLE' | 'BOOKED' | 'LOCKED';
-type BookingOption = 'OWN' | 'RENTAL';
-type RentalMode = 'TENT' | 'BUNDLE';
-type ProductItemType = 'SPOT' | 'TENT' | 'EQUIPMENT' | 'GOODS' | 'FNB' | 'PACKAGE';
-type PaymentProofStatus = 'WAITING_UPLOAD' | 'UPLOADED' | 'VERIFIED' | 'REJECTED';
-
-interface ProductListResponse<T> {
-  content?: T[];
-}
-
-interface RentalItem {
-  id?: number;
-  name?: string;
-  description?: string;
-  images?: string[];
-  itemType?: ProductItemType;
-  category?: 'RENTAL' | 'SALE' | 'PACKAGE';
-  rentalDetails?: {
-    dailyRate?: number;
-    stockTotal?: number;
-  };
-}
-
-interface SaleItem {
-  id?: number;
-  name?: string;
-  description?: string;
-  images?: string[];
-  itemType?: ProductItemType;
-  category?: 'RENTAL' | 'SALE' | 'PACKAGE';
-  saleDetails?: {
-    unitPrice?: number;
-    currentStock?: number;
-  };
-}
-
-interface BundleListResponse {
-  content?: BundleOption[];
-}
-
-interface BundleOption {
-  id?: number;
-  name?: string;
-  description?: string;
-  bundlePrice?: number;
-  components?: BundleComponent[];
-}
-
-interface BundleComponent {
-  productId?: number;
-  productName?: string;
-  quantity?: number;
-}
-
-interface BookingResponse {
-  id?: number;
-  invoiceNumber?: string;
-  status?: string;
-  totalAmount?: number;
-  paymentMethod?: string;
-  paymentBank?: string;
-  paymentBankName?: string;
-  paymentBankAccountNumber?: string;
-  paymentBankAccountName?: string;
-  paymentUniqueCode?: number;
-  paymentAmount?: number;
-  paymentProofUrl?: string;
-  paymentProofStatus?: PaymentProofStatus;
-  expiresAt?: string;
-}
-
-interface CartItemRequest {
-  productId: number;
-  spotId?: string;
-  checkInDate: string;
-  checkOutDate: string;
-  quantity: number;
-}
-
-interface MapSummary {
-  id?: number;
-  mapCode?: string;
-  mapName?: string;
-  imageWidth?: number;
-  imageHeight?: number;
-  backgroundImageUrl?: string;
-}
+import {
+  BookingOption,
+  BookingResponse,
+  BundleListResponse,
+  BundleOption,
+  CartItemRequest,
+  MapSummary,
+  ProductListResponse,
+  RentalItem,
+  RentalMode,
+  SaleItem,
+  SpotAvailabilityStatus
+} from './models/visual-map.model';
 
 @Component({
   selector: 'app-visual-map',

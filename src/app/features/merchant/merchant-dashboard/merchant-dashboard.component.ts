@@ -2,12 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { CampsiteSummaryResponse, MerchantCampsiteService } from '../services/merchant-campsite.service';
-
-interface StatCard {
-  label: string;
-  value: string;
-  hint: string;
-}
+import { StatCard } from '../models/merchant-dashboard.model';
 
 @Component({
   selector: 'app-merchant-dashboard',

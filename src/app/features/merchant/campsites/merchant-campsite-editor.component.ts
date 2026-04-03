@@ -10,24 +10,7 @@ import {
   MerchantCampsiteRequest,
   MerchantCampsiteService
 } from '../services/merchant-campsite.service';
-
-interface AmenityGroup {
-  category: string;
-  items: AmenityItem[];
-}
-
-interface CampsiteFormValue {
-  name: string | null;
-  description: string | null;
-  address: string | null;
-  latitude: number | string | null;
-  longitude: number | string | null;
-  basePrice: number | null;
-  checkInTime: string | null;
-  checkOutTime: string | null;
-  contactEmail: string | null;
-  contactPhone: string | null;
-}
+import { AmenityGroup, CampsiteFormValue } from './models/merchant-campsite-editor.model';
 
 @Component({
   selector: 'app-merchant-campsite-editor',

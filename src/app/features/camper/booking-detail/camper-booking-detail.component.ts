@@ -6,45 +6,12 @@ import { HttpClient } from '@angular/common/http';
 import { catchError, concatMap, forkJoin, from, last, of } from 'rxjs';
 import { NavbarComponent } from '../../../layout/navbar.component';
 import { BankAccountOption, CamperBookingService, CamperBooking, CartItemRequest } from '../services/camper-booking.service';
-
-type ProductItemType = 'SPOT' | 'TENT' | 'EQUIPMENT' | 'GOODS' | 'FNB' | 'PACKAGE';
-
-interface ProductListResponse<T> {
-  content?: T[];
-}
-
-interface RentalItem {
-  id?: number;
-  name?: string;
-  description?: string;
-  images?: string[];
-  itemType?: ProductItemType;
-  rentalDetails?: {
-    dailyRate?: number;
-    stockTotal?: number;
-  };
-}
-
-interface SaleItem {
-  id?: number;
-  name?: string;
-  description?: string;
-  images?: string[];
-  itemType?: ProductItemType;
-  saleDetails?: {
-    unitPrice?: number;
-    currentStock?: number;
-  };
-}
-
-interface GroupedItem {
-  key: string;
-  name: string;
-  type: string;
-  quantity: number;
-  subtotal: number;
-  nightsLabel?: string;
-}
+import {
+  GroupedItem,
+  ProductListResponse,
+  RentalItem,
+  SaleItem
+} from './models/camper-booking-detail.model';
 
 @Component({
   selector: 'app-camper-booking-detail',

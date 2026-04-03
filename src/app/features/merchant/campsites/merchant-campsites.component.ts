@@ -3,19 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import {
-  CampsiteStatus,
   MerchantCampsiteResponse,
   MerchantCampsiteService,
   PageMetadata
 } from '../services/merchant-campsite.service';
 import { RoleService } from '../../../core/services/role.service';
-
-type StatusFilter = 'ALL' | CampsiteStatus;
-
-interface StatusOption {
-  label: string;
-  value: StatusFilter;
-}
+import { StatusFilter, StatusOption } from './models/merchant-campsites.model';
 
 @Component({
   selector: 'app-merchant-campsites',

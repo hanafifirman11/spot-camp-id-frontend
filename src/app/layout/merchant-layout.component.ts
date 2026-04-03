@@ -1,16 +1,7 @@
 import { Component, HostListener, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-
-interface StoredUserInfo {
-  id?: number;
-  email?: string;
-  firstName?: string;
-  lastName?: string;
-  role?: string;
-  businessName?: string;
-  businessCode?: string;
-}
+import { StoredUserInfo } from './models/layout.model';
 
 @Component({
   selector: 'app-merchant-layout',
