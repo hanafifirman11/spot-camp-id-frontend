@@ -9,6 +9,7 @@ import {
   ReportingService
 } from '../../../core/services/reporting.service';
 import { FilterOption } from './models/merchant-reports.model';
+import { BOOKING_STATUS_OPTIONS } from '../../../shared/constants/booking-status-options.const';
 import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
 import { StatusBadgeComponent } from '../../../shared/components/status-badge/status-badge.component';
@@ -49,13 +50,7 @@ export class MerchantReportsComponent implements OnInit {
   isLoading = false;
   errorMessage = '';
 
-  statusOptions: FilterOption[] = [
-    { label: 'All statuses', value: 'ALL' },
-    { label: 'Payment pending', value: 'PAYMENT_PENDING' },
-    { label: 'Confirmed', value: 'CONFIRMED' },
-    { label: 'Cancelled', value: 'CANCELLED' },
-    { label: 'Completed', value: 'COMPLETED' }
-  ];
+  statusOptions: FilterOption[] = BOOKING_STATUS_OPTIONS;
 
   ngOnInit(): void {
     this.setDefaultDates();

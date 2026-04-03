@@ -13,6 +13,7 @@ import {
   MerchantBookingService
 } from '../../merchant/services/merchant-booking.service';
 import { FilterOption } from './models/admin-bookings.model';
+import { BOOKING_STATUS_OPTIONS } from '../../../shared/constants/booking-status-options.const';
 import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
 import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
 import { StatusBadgeComponent } from '../../../shared/components/status-badge/status-badge.component';
@@ -54,13 +55,7 @@ export class AdminBookingsComponent implements OnInit {
   isLoadingCampsites = false;
   errorMessage = '';
 
-  statusOptions: FilterOption[] = [
-    { label: 'All statuses', value: 'ALL' },
-    { label: 'Payment pending', value: 'PAYMENT_PENDING' },
-    { label: 'Confirmed', value: 'CONFIRMED' },
-    { label: 'Cancelled', value: 'CANCELLED' },
-    { label: 'Completed', value: 'COMPLETED' }
-  ];
+  statusOptions: FilterOption[] = BOOKING_STATUS_OPTIONS;
 
   ngOnInit(): void {
     this.loadBusinesses();

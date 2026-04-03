@@ -8,6 +8,7 @@ import { EmptyStateComponent } from '../../../shared/components/empty-state/empt
 import { PaginationComponent } from '../../../shared/components/pagination/pagination.component';
 import { StatusBadgeComponent } from '../../../shared/components/status-badge/status-badge.component';
 import { CurrencyIdrPipe } from '../../../shared/pipes/currency-idr.pipe';
+import { BOOKING_STATUS_OPTIONS } from '../../../shared/constants/booking-status-options.const';
 
 @Component({
   selector: 'app-camper-bookings',
@@ -38,13 +39,7 @@ export class CamperBookingsComponent implements OnInit {
   isLoading = false;
   errorMessage = '';
 
-  statusOptions = [
-    { label: 'All statuses', value: 'ALL' },
-    { label: 'Payment pending', value: 'PAYMENT_PENDING' },
-    { label: 'Confirmed', value: 'CONFIRMED' },
-    { label: 'Cancelled', value: 'CANCELLED' },
-    { label: 'Completed', value: 'COMPLETED' }
-  ];
+  statusOptions = BOOKING_STATUS_OPTIONS;
 
   ngOnInit(): void {
     this.loadBookings(0);
