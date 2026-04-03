@@ -1,0 +1,47 @@
+<app-navbar></app-navbar>
+
+<main class="page">
+  <header class="hero">
+    <div>
+      <p class="eyebrow">Q&amp;A</p>
+      <h1>Answers for campers and merchants</h1>
+      <p class="subtitle">Browse quick answers about bookings, payments, map setup, and account settings.</p>
+    </div>
+    <div class="search">
+      <input type="search" placeholder="Search by keyword" [(ngModel)]="query">
+      <button type="button" class="ghost" *ngIf="query" (click)="clearSearch()">Clear</button>
+    </div>
+  </header>
+
+  <div class="filters">
+    <button type="button"
+            *ngFor="let category of categories"
+            [class.active]="activeCategory === category"
+            (click)="setCategory(category)">
+      {{ category }}
+    </button>
+  </div>
+
+  <section class="panel" *ngIf="filteredItems.length > 0">
+    <details class="qa-item" *ngFor="let item of filteredItems; trackBy: trackById">
+      <summary>
+        <span class="badge">{{ item.category }}</span>
+        <span class="question">{{ item.question }}</span>
+      </summary>
+      <p class="answer">{{ item.answer }}</p>
+    </details>
+  </section>
+
+  <div class="state empty" *ngIf="filteredItems.length === 0">
+    <h2>No results</h2>
+    <p>Try another keyword or switch categories.</p>
+  </div>
+
+  <section class="support">
+    <div>
+      <h2>Still need help?</h2>
+      <p>Reach out via the help center or email support&#64;spotcamp.id.</p>
+    </div>
+    <a class="primary" href="mailto:support@spotcamp.id">Contact support</a>
+  </section>
+</main>

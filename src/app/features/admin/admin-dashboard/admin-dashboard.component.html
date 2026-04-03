@@ -1,0 +1,109 @@
+<section class="admin-dashboard">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">Superadmin Console</p>
+      <h1>System Overview</h1>
+      <p class="subtitle">Monitor businesses, campsites, and platform activity in one glance.</p>
+    </div>
+    <button type="button" class="refresh" (click)="loadSummary()">Refresh</button>
+  </header>
+
+  <div class="state" *ngIf="isLoading">Loading summary...</div>
+  <div class="state error" *ngIf="!isLoading && errorMessage">{{ errorMessage }}</div>
+
+  <div class="section-block" *ngIf="summary as data">
+    <div class="section-title">Business Pulse</div>
+    <div class="cards">
+      <article class="stat-card">
+        <div class="stat-label">Businesses</div>
+        <div class="stat-value">{{ data.totalBusinesses | number }}</div>
+        <div class="stat-meta">{{ data.activeBusinesses | number }} active</div>
+      </article>
+      <article class="stat-card">
+        <div class="stat-label">Campsites</div>
+        <div class="stat-value">{{ data.totalCampsites | number }}</div>
+        <div class="stat-meta">{{ data.activeCampsites | number }} active</div>
+      </article>
+      <article class="stat-card">
+        <div class="stat-label">Campers</div>
+        <div class="stat-value">{{ data.totalCampers | number }}</div>
+        <div class="stat-meta">Registered users</div>
+      </article>
+      <article class="stat-card">
+        <div class="stat-label">Bookings</div>
+        <div class="stat-value">{{ data.totalBookings | number }}</div>
+        <div class="stat-meta">All-time</div>
+      </article>
+    </div>
+  </div>
+
+  <div class="section-block" *ngIf="summary as data">
+    <div class="section-title">System Health</div>
+    <div class="cards">
+      <article class="stat-card">
+        <div class="stat-label">Uptime</div>
+        <div class="stat-value">{{ formatUptime(data.uptimeSeconds) }}</div>
+        <div class="stat-meta">Since start</div>
+      </article>
+      <article class="stat-card">
+        <div class="stat-label">Memory (JVM)</div>
+        <div class="stat-value">{{ formatBytes(data.totalMemory! - data.freeMemory!) }}</div>
+        <div class="stat-meta">of {{ formatBytes(data.totalMemory) }} allocated</div>
+      </article>
+      <article class="stat-card">
+        <div class="stat-label">System CPU</div>
+        <div class="stat-value">{{ (data.systemCpuUsage || 0) | percent:'1.1-1' }}</div>
+        <div class="stat-meta">Load average</div>
+      </article>
+      <article class="stat-card">
+        <div class="stat-label">Process CPU</div>
+        <div class="stat-value">{{ (data.processCpuUsage || 0) | percent:'1.1-1' }}</div>
+        <div class="stat-meta">JVM load</div>
+      </article>
+    </div>
+  </div>
+
+  <div class="section-block" *ngIf="summary as data">
+    <div class="section-title">Traffic + Latency</div>
+    <div class="cards">
+      <article class="stat-card">
+        <div class="stat-label">Requests</div>
+        <div class="stat-value">{{ data.httpRequestCount | number }}</div>
+        <div class="stat-meta">Total since boot</div>
+      </article>
+      <article class="stat-card">
+        <div class="stat-label">Errors</div>
+        <div class="stat-value">{{ data.httpErrorCount | number }}</div>
+        <div class="stat-meta">4xx/5xx responses</div>
+      </article>
+      <article class="stat-card">
+        <div class="stat-label">Error Rate</div>
+        <div class="stat-value">{{ formatErrorRate(data) }}</div>
+        <div class="stat-meta">Requests with errors</div>
+      </article>
+      <article class="stat-card">
+        <div class="stat-label">Avg Latency</div>
+        <div class="stat-value">{{ formatLatency(data.httpAverageLatencyMs) }}</div>
+        <div class="stat-meta">All endpoints</div>
+      </article>
+    </div>
+  </div>
+
+  <div class="section-block" *ngIf="summary as data">
+    <div class="section-title">Storage</div>
+    <div class="cards">
+      <article class="stat-card">
+        <div class="stat-label">Disk Used</div>
+        <div class="stat-value">
+          {{ getDiskUsed(data) !== null ? formatBytes(getDiskUsed(data)!) : '-' }}
+        </div>
+        <div class="stat-meta">of {{ formatBytes(data.diskTotal) }}</div>
+      </article>
+      <article class="stat-card">
+        <div class="stat-label">Disk Free</div>
+        <div class="stat-value">{{ formatBytes(data.diskFree) }}</div>
+        <div class="stat-meta">Available</div>
+      </article>
+    </div>
+  </div>
+</section>

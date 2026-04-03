@@ -1,0 +1,40 @@
+<app-navbar></app-navbar>
+<div class="page">
+  <section class="panel">
+    <header class="header">
+      <div>
+        <p class="eyebrow">Notifications</p>
+        <h1>Updates for you</h1>
+        <p class="subtitle">Payment status, booking updates, and reminders.</p>
+      </div>
+    </header>
+
+    <div class="state loading" *ngIf="isLoading">Loading notifications...</div>
+    <div class="state error" *ngIf="!isLoading && errorMessage">{{ errorMessage }}</div>
+
+    <div class="list" *ngIf="!isLoading && notifications.length > 0">
+      <article class="card" *ngFor="let item of notifications">
+        <div>
+          <div class="title">
+            <span class="badge" [class.unread]="!item.read">{{ item.read ? 'Read' : 'New' }}</span>
+            <h3>{{ item.title }}</h3>
+          </div>
+          <p>{{ item.message }}</p>
+          <small>{{ item.createdAt ? (item.createdAt | date:'medium') : '-' }}</small>
+        </div>
+        <div class="actions">
+          <a *ngIf="item.referenceType === 'BOOKING' && item.referenceId"
+             class="ghost"
+             [routerLink]="['/bookings', item.referenceId]">
+            View booking
+          </a>
+          <button type="button" class="ghost" (click)="markAsRead(item)" [disabled]="item.read">Mark read</button>
+        </div>
+      </article>
+    </div>
+
+    <div class="state empty" *ngIf="!isLoading && notifications.length === 0">
+      No notifications yet.
+    </div>
+  </section>
+</div>

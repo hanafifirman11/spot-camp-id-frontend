@@ -1,0 +1,168 @@
+<section class="map-editor">
+  <header class="header">
+    <div>
+      <p class="eyebrow">Map editor</p>
+      <h1>Site plan editor</h1>
+      <p class="subtitle">Upload the campsite layout and draw bookable spots.</p>
+    </div>
+    <div class="header-actions">
+      <a class="ghost" [routerLink]="['/merchant/campsites', campsiteId]">Back to campsite</a>
+      <button type="button" class="primary" (click)="saveMap()" [disabled]="isSaving || !canSave">
+        {{ isSaving ? 'Saving...' : 'Save & publish' }}
+      </button>
+    </div>
+  </header>
+
+  <div class="state error" *ngIf="loadError">{{ loadError }}</div>
+  <div class="state error" *ngIf="saveError">{{ saveError }}</div>
+  <div class="state info" *ngIf="saveMessage">{{ saveMessage }}</div>
+
+  <div class="workspace">
+    <div class="canvas-column">
+      <div class="canvas-toolbar">
+        <div class="tool">
+          <span class="label">Draw mode</span>
+          <button type="button" class="toggle" [class.active]="isDrawMode" (click)="toggleDrawMode()">
+            {{ isDrawMode ? 'On' : 'Off' }}
+          </button>
+        </div>
+        <div class="tool zoom-tool">
+          <span class="label">Zoom</span>
+          <div class="zoom-controls">
+            <button type="button" class="ghost" (click)="zoomOut()" [disabled]="zoomLevel <= minZoom">−</button>
+            <span class="value">{{ (zoomLevel * 100) | number:'1.0-0' }}%</span>
+            <button type="button" class="ghost" (click)="zoomIn()" [disabled]="zoomLevel >= maxZoom">+</button>
+            <button type="button" class="ghost" (click)="resetZoom()">Reset</button>
+          </div>
+        </div>
+        <div class="tool">
+          <span class="label">Points</span>
+          <span class="value">{{ draftPoints.length }}</span>
+        </div>
+        <div class="tool-actions">
+          <button type="button" class="ghost" (click)="undoDraftPoint()" [disabled]="draftPoints.length === 0">Undo</button>
+          <button type="button" class="ghost" (click)="clearDraft()" [disabled]="draftPoints.length === 0">Clear</button>
+          <button type="button" class="secondary" (click)="finishSpot()" [disabled]="draftPoints.length < 3">
+            Finish spot
+          </button>
+        </div>
+      </div>
+
+      <div class="canvas-wrapper" #mapWrapper>
+        <div #mapContainer class="map-canvas"></div>
+        <div class="canvas-placeholder" *ngIf="!backgroundImageUrl">
+          Upload a background image to start drawing.
+        </div>
+      </div>
+    </div>
+
+    <div class="panel-column">
+      <section class="panel map-panel">
+        <h3>Map layout</h3>
+        <p>Select an existing layout or create a new one.</p>
+        <div class="state info" *ngIf="mapListLoading">Loading maps...</div>
+        <div class="state error" *ngIf="mapListError">{{ mapListError }}</div>
+        <label>Existing maps</label>
+        <select
+          [ngModel]="selectedMapCode"
+          [ngModelOptions]="{standalone: true}"
+          (ngModelChange)="onMapSelected($event)">
+          <option [ngValue]="null">Select map</option>
+          <option *ngFor="let map of mapOptions" [ngValue]="map.mapCode">
+            {{ map.mapName || ('Map ' + map.mapCode) }}
+          </option>
+        </select>
+        <button type="button" class="ghost" (click)="startNewMap()">+ New map</button>
+        <label>Map name</label>
+        <input type="text"
+               [(ngModel)]="mapName"
+               [ngModelOptions]="{standalone: true}"
+               placeholder="e.g. Lakefront layout">
+        <small class="hint">Map name can be updated anytime.</small>
+      </section>
+
+      <section class="panel">
+        <h3>Background</h3>
+        <p>Use the site plan image as the base for spots.</p>
+        <input type="file" accept="image/*" (change)="onBackgroundSelected($event)">
+        <div class="image-controls">
+          <button type="button" class="secondary" (click)="uploadBackground()" [disabled]="!backgroundFile || isUploading">
+            {{ isUploading ? 'Uploading...' : 'Upload background' }}
+          </button>
+          <div class="dimensions">
+            <label>Width</label>
+            <input type="number" [(ngModel)]="imageWidth" [ngModelOptions]="{standalone: true}" min="1">
+            <label>Height</label>
+            <input type="number" [(ngModel)]="imageHeight" [ngModelOptions]="{standalone: true}" min="1">
+          </div>
+        </div>
+      </section>
+
+      <section class="panel spot-panel">
+        <h3>Spots</h3>
+        <p>Create a spot by drawing a polygon on the map.</p>
+
+        <div class="spot-editor" [class.empty]="!selectedSpot">
+          <ng-container *ngIf="selectedSpot; else spotEmpty">
+            <div class="spot-editor-header">
+              <strong>Editing {{ selectedSpot.name || selectedSpot.id }}</strong>
+              <span class="spot-tag">ID {{ selectedSpot.id }}</span>
+            </div>
+            <label>ID</label>
+            <input type="text" [value]="selectedSpot.id" readonly>
+            <label>Name</label>
+            <input type="text"
+                   [(ngModel)]="selectedSpot.name"
+                   [ngModelOptions]="{standalone: true}"
+                   (ngModelChange)="updateSpotLabel(selectedSpot)">
+            <label>Product</label>
+            <div class="state error" *ngIf="productsError">{{ productsError }}</div>
+            <div class="state info" *ngIf="productsLoading">Loading products...</div>
+            <div class="state empty" *ngIf="!productsLoading && !productsError && products.length === 0">
+              No map rental products found. Create one under Campsite &gt; Products.
+            </div>
+            <select [(ngModel)]="selectedSpot.productId" [ngModelOptions]="{standalone: true}">
+              <option [ngValue]="undefined">Select product</option>
+              <option *ngFor="let product of products"
+                      [ngValue]="product.id"
+                      [disabled]="isProductUsed(product.id, selectedSpot)">
+                {{ product.name }} ({{ product.basePrice | number }})
+              </option>
+            </select>
+            <small class="hint">Each spot must use a unique map rental product.</small>
+          </ng-container>
+          <ng-template #spotEmpty>
+            <div class="spot-empty">
+              Select a spot on the map or from the list to edit details.
+            </div>
+          </ng-template>
+        </div>
+
+        <div class="spot-list-wrapper" *ngIf="spots.length > 0">
+          <div class="spot-list">
+            <article class="spot-item" *ngFor="let spot of spots">
+              <div>
+                <strong>{{ spot.name || spot.id }}</strong>
+                <div class="spot-meta">Points: {{ spot.coordinates?.length || 0 }}</div>
+                <div class="spot-meta">Product: {{ spot.productId || 'Unlinked' }}</div>
+              </div>
+              <div class="spot-actions">
+                <button type="button" class="ghost" (click)="selectSpot(spot)">Edit</button>
+                <button type="button" class="danger" (click)="deleteSpot(spot)">Delete</button>
+              </div>
+            </article>
+          </div>
+        </div>
+        <div class="state empty" *ngIf="spots.length === 0">No spots yet.</div>
+      </section>
+
+      <section class="panel">
+        <h3>Validation</h3>
+        <ul class="validation-list">
+          <li *ngFor="let error of validationErrors">{{ error }}</li>
+        </ul>
+        <div class="state info" *ngIf="validationErrors.length === 0">Ready to save.</div>
+      </section>
+    </div>
+  </div>
+</section>

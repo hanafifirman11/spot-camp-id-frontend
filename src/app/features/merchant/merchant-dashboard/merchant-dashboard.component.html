@@ -1,0 +1,33 @@
+<section class="dashboard">
+  <header class="dashboard-header">
+    <div>
+      <p class="eyebrow">Welcome back</p>
+      <h1>Merchant Dashboard</h1>
+      <p class="subtitle">Track campsites, bookings, and revenue in one workspace.</p>
+    </div>
+    <a class="primary" routerLink="/merchant/campsites/new">Create campsite</a>
+  </header>
+
+  <div class="stats-grid">
+    <article class="stat" *ngFor="let stat of stats">
+      <p class="label">{{ stat.label }}</p>
+      <h2>{{ stat.value }}</h2>
+      <p class="hint">{{ stat.hint }}</p>
+    </article>
+  </div>
+
+  <div class="panels">
+    <article class="panel">
+      <h3>Next steps</h3>
+      <ul>
+        <li>Add your first campsite listing.</li>
+        <li>Upload a map and draw bookable spots.</li>
+        <li>List rental products and bundle offers.</li>
+      </ul>
+    </article>
+    <article class="panel">
+      <h3>Recent activity</h3>
+      <p>Bookings and payouts will appear here once you go live.</p>
+    </article>
+  </div>
+</section>

@@ -1,0 +1,44 @@
+<nav class="navbar" [class.scrolled]="isScrolled">
+  <div class="container">
+    <a routerLink="/" class="brand">
+      <span class="icon">⛺</span> 
+      <span class="text">SpotCamp</span>
+    </a>
+    
+    <div class="nav-links">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a>
+      <a routerLink="/public-market" routerLinkActive="active">Explore</a>
+      <a *ngIf="isAuthenticated && !isMerchant" routerLink="/bookings" routerLinkActive="active">Bookings</a>
+      <a *ngIf="isMerchant" routerLink="/merchant/dashboard" routerLinkActive="active">Merchant</a>
+    </div>
+
+    <ng-container *ngIf="isAuthenticated; else authButtons">
+      <div class="user-actions">
+        <a *ngIf="!isMerchant" routerLink="/notifications" class="notif-bell" [class.ringing]="bellActive" aria-label="Notifications">
+          <span class="bell-icon" aria-hidden="true">🔔</span>
+          <span class="badge" *ngIf="unreadBadge">{{ unreadBadge }}</span>
+        </a>
+        <div class="user-menu" [class.open]="isUserMenuOpen">
+          <button class="user-button" type="button" (click)="toggleUserMenu($event)" aria-haspopup="menu" [attr.aria-expanded]="isUserMenuOpen">
+            <span class="user-icon" aria-hidden="true">{{ initials }}</span>
+            <span class="user-name">{{ displayName }}</span>
+            <span class="user-caret" aria-hidden="true">v</span>
+          </button>
+          <div class="user-dropdown" role="menu" *ngIf="isUserMenuOpen">
+            <a *ngIf="isMerchant" role="menuitem" routerLink="/merchant/dashboard">Merchant dashboard</a>
+            <a role="menuitem" routerLink="/profile-management">Profile management</a>
+            <a role="menuitem" routerLink="/qna">Q&A</a>
+            <button role="menuitem" type="button" class="logout" (click)="logout()">Logout</button>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-template #authButtons>
+      <div class="auth-buttons">
+        <a routerLink="/auth/login" class="btn btn-text">Login</a>
+        <a routerLink="/auth/register" class="btn btn-primary">Register</a>
+      </div>
+    </ng-template>
+  </div>
+</nav>

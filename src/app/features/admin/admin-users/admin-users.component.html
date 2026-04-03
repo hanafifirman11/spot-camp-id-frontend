@@ -1,0 +1,80 @@
+<section class="admin-users">
+  <header class="page-header">
+    <div>
+      <p class="eyebrow">Superadmin Console</p>
+      <h1>Users</h1>
+      <p class="subtitle">Audit platform users without modifying merchant data.</p>
+    </div>
+
+    <div class="filters">
+      <input
+        type="text"
+        placeholder="Search name, email, or business"
+        [(ngModel)]="query"
+        (keyup.enter)="onSearch()">
+      <select [(ngModel)]="roleFilter">
+        <option value="">All roles</option>
+        <option value="SUPERADMIN">Superadmin</option>
+        <option value="ADMIN">Legacy Admin</option>
+        <option value="MERCHANT">Merchant Owner</option>
+        <option value="MERCHANT_ADMIN">Merchant Admin</option>
+        <option value="MERCHANT_MEMBER">Merchant Member</option>
+        <option value="CAMPER">Camper</option>
+      </select>
+      <select [(ngModel)]="statusFilter">
+        <option value="">All status</option>
+        <option value="ACTIVE">Active</option>
+        <option value="INACTIVE">Inactive</option>
+        <option value="SUSPENDED">Suspended</option>
+      </select>
+      <button type="button" class="primary" (click)="onSearch()">Apply</button>
+      <button type="button" class="ghost" (click)="clearFilters()">Reset</button>
+    </div>
+  </header>
+
+  <div class="state" *ngIf="isLoading">Loading users...</div>
+  <div class="state error" *ngIf="!isLoading && errorMessage">{{ errorMessage }}</div>
+
+  <div class="table-card" *ngIf="!isLoading && users.length > 0">
+    <table>
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Role</th>
+          <th>Status</th>
+          <th>Business</th>
+          <th>Last Login</th>
+          <th>Created</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of users">
+          <td>
+            <div class="name">{{ user.name || 'Unknown' }}</div>
+            <div class="muted">{{ user.email || '-' }}</div>
+          </td>
+          <td>{{ user.role || '-' }}</td>
+          <td>
+            <span class="status" [ngClass]="(user.status || '').toLowerCase()">{{ user.status || '-' }}</span>
+          </td>
+          <td>
+            <div class="name">{{ user.businessName || '-' }}</div>
+            <div class="muted" *ngIf="user.businessCode">{{ user.businessCode }}</div>
+          </td>
+          <td>{{ user.lastLoginAt ? (user.lastLoginAt | date:'yyyy-MM-dd HH:mm') : '-' }}</td>
+          <td>{{ user.createdAt ? (user.createdAt | date:'yyyy-MM-dd') : '-' }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="pagination">
+      <button (click)="prevPage()" [disabled]="page.number <= 0">Prev</button>
+      <span>Page {{ page.number + 1 }} of {{ page.totalPages || 1 }}</span>
+      <button (click)="nextPage()" [disabled]="page.number + 1 >= page.totalPages">Next</button>
+    </div>
+  </div>
+
+  <div class="empty" *ngIf="!isLoading && users.length === 0 && !errorMessage">
+    No users match the current filters.
+  </div>
+</section>

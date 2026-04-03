@@ -1,0 +1,222 @@
+<app-navbar></app-navbar>
+<div class="page">
+  <section class="detail" *ngIf="!isLoading">
+    <div class="state error" *ngIf="errorMessage">{{ errorMessage }}</div>
+    <div class="state success" *ngIf="successMessage">{{ successMessage }}</div>
+
+    <header class="header" *ngIf="booking">
+      <div>
+        <p class="eyebrow">Booking detail</p>
+        <h1>Booking #{{ booking.id }}</h1>
+        <p class="subtitle">Review your booking items and payment status.</p>
+      </div>
+      <div class="actions">
+        <button type="button" class="ghost" *ngIf="booking.status === 'CONFIRMED' || booking.status === 'COMPLETED'" (click)="downloadInvoice()">
+          Download invoice
+        </button>
+        <a class="ghost" *ngIf="booking.status === 'PAYMENT_PENDING'" [routerLink]="['/bookings', booking.id, 'checkout']">Upload payment proof</a>
+      </div>
+    </header>
+
+    <div class="card" *ngIf="booking">
+      <div class="row">
+        <span>Stay dates</span>
+        <strong>{{ booking.checkInDate || '-' }} → {{ booking.checkOutDate || '-' }}</strong>
+      </div>
+      <div class="row">
+        <span>Status</span>
+        <strong>{{ booking.status }}</strong>
+      </div>
+    </div>
+
+    <div class="card" *ngIf="booking">
+      <h3>Denah booking</h3>
+      <div class="row">
+        <span>Campsite</span>
+        <strong>{{ campsiteName || ('Campsite #' + booking.campsiteId) }}</strong>
+      </div>
+      <div class="row">
+        <span>Map</span>
+        <strong>{{ mapName || '-' }}</strong>
+      </div>
+      <div class="row">
+        <span>Blok</span>
+        <strong>{{ booking.spotName || booking.spotId || '-' }}</strong>
+      </div>
+    </div>
+
+    <div class="card" *ngIf="booking?.status !== 'IN_CART' && groupedItems.length > 0">
+      <h3>Items</h3>
+      <div class="item" *ngFor="let item of groupedItems">
+        <div>
+          <strong>{{ item.name }}</strong>
+          <p>
+            {{ item.type }}
+            <span *ngIf="item.nightsLabel">· {{ item.nightsLabel }}</span>
+            <span *ngIf="!item.nightsLabel">· Qty {{ item.quantity }}</span>
+          </p>
+        </div>
+        <span>{{ formatCurrency(item.subtotal) }}</span>
+      </div>
+    </div>
+
+    <div class="card" *ngIf="booking?.status === 'IN_CART'">
+      <h3>Booking options</h3>
+      <div class="option-block">
+        <label>
+          Tent option
+          <select [(ngModel)]="tentMode">
+            <option value="OWN">Bring your own tent</option>
+            <option value="RENTAL">Rent a tent</option>
+          </select>
+        </label>
+      </div>
+    </div>
+
+    <div class="card" *ngIf="booking?.status === 'IN_CART'">
+      <h3>Items</h3>
+      <div class="item" *ngFor="let item of groupedItems">
+        <div>
+          <strong>{{ item.name }}</strong>
+          <p>
+            {{ item.type }}
+            <span *ngIf="item.nightsLabel">· {{ item.nightsLabel }}</span>
+            <span *ngIf="!item.nightsLabel">· Qty {{ item.quantity }}</span>
+          </p>
+        </div>
+        <span>{{ formatCurrency(item.subtotal) }}</span>
+      </div>
+      <p class="item-placeholder" *ngIf="groupedItems.length === 0">Belum ada item tambahan. Pilih item sewa atau beli lewat tombol di bawah.</p>
+      <button type="button" class="ghost" (click)="openItemModal()">Pilih items</button>
+    </div>
+
+    <div class="card" *ngIf="booking?.status === 'IN_CART'">
+      <h3>Checkout details</h3>
+      <div class="form-grid">
+        <label>
+          Contact name
+          <input type="text" [(ngModel)]="contactName" placeholder="Your name">
+        </label>
+        <label>
+          Email
+          <input type="email" [(ngModel)]="contactEmail" placeholder="you@example.com">
+        </label>
+        <label>
+          Phone
+          <input type="text" [(ngModel)]="contactPhone" placeholder="+62">
+        </label>
+        <label>
+          Bank account
+          <select [(ngModel)]="selectedBankCode">
+            <option value="">Select bank</option>
+            <option *ngFor="let account of bankAccounts" [value]="account.bankCode">
+              {{ account.bankName || account.bankCode }} · {{ account.accountNumber }}
+            </option>
+          </select>
+        </label>
+      </div>
+      <label>
+        Special requests
+        <textarea rows="3" [(ngModel)]="specialRequests" placeholder="Optional note"></textarea>
+      </label>
+      <div class="total-row">
+        <span>Total</span>
+        <strong>{{ formatCurrency(booking?.totalAmount) }}</strong>
+      </div>
+      <button type="button" class="primary" (click)="proceedToCheckout()" [disabled]="isSubmitting">
+        {{ isSubmitting ? 'Processing...' : 'Continue to checkout' }}
+      </button>
+    </div>
+
+    <div class="card" *ngIf="booking?.paymentMethod">
+      <h3>Payment</h3>
+      <div class="row">
+        <span>Method</span>
+        <strong>{{ booking?.paymentMethod }}</strong>
+      </div>
+      <div class="row" *ngIf="booking?.paymentAmount">
+        <span>Amount</span>
+        <strong>{{ formatCurrency(booking?.paymentAmount) }}</strong>
+      </div>
+      <div class="row" *ngIf="booking?.paymentBankName">
+        <span>Bank</span>
+        <strong>{{ booking?.paymentBankName }}</strong>
+      </div>
+      <div class="row" *ngIf="getProofUrl()">
+        <span>Proof</span>
+        <button type="button" class="proof-thumb" (click)="openProofModal()">
+          <img [src]="getProofUrl()" alt="Payment proof" />
+        </button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="modal-backdrop" *ngIf="showProofModal" (click)="closeProofModal()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <h3>Payment proof</h3>
+    <img class="modal-image" [src]="getProofUrl()" alt="Payment proof" />
+    <button type="button" class="ghost" (click)="closeProofModal()">Close</button>
+  </div>
+</div>
+
+<div class="modal-backdrop" *ngIf="showItemModal" (click)="closeItemModal()">
+  <div class="modal items-modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div>
+        <h3>Pilih items</h3>
+        <p class="subtitle">Checklist item yang mau disewa atau dibeli.</p>
+      </div>
+      <button type="button" class="ghost" (click)="closeItemModal()">Close</button>
+    </div>
+    <div class="modal-scroll">
+      <section class="modal-section" *ngIf="tentMode === 'RENTAL' && tentItems.length">
+        <h4>Tent rentals</h4>
+        <div class="option-row" *ngFor="let item of tentItems">
+          <label class="option-label">
+            <input type="radio" name="tentItemModal" [value]="item.id" [(ngModel)]="selectedTentId" (change)="setTentSelection(item.id ?? null)">
+            <span>
+              <strong>{{ item.name }}</strong>
+              <small *ngIf="item.description">{{ item.description }}</small>
+            </span>
+          </label>
+          <div class="price">{{ formatCurrency(item.rentalDetails?.dailyRate) }} / night</div>
+          <input class="qty" type="number" min="1" [(ngModel)]="selectedTentQuantity" [disabled]="selectedTentId !== item.id">
+        </div>
+      </section>
+
+      <section class="modal-section" *ngIf="rentalAddOns.length">
+        <h4>Rental items</h4>
+        <div class="option-row" *ngFor="let item of rentalAddOns">
+          <label class="option-label">
+            <input type="checkbox" [checked]="isRentalSelected(item.id)" (change)="toggleRentalSelection(item.id, $event)">
+            <span>
+              <strong>{{ item.name }}</strong>
+              <small *ngIf="item.description">{{ item.description }}</small>
+            </span>
+          </label>
+          <div class="price">{{ formatCurrency(item.rentalDetails?.dailyRate) }} / night</div>
+          <input class="qty" type="number" min="1" [disabled]="!isRentalSelected(item.id)" [ngModel]="selectedRentalAddOns.get(item.id || 0) || 1" (ngModelChange)="setAddOnQuantity(item.id || 0, $event)">
+        </div>
+      </section>
+
+      <section class="modal-section" *ngIf="saleItems.length">
+        <h4>Sale items</h4>
+        <div class="option-row" *ngFor="let item of saleItems">
+          <label class="option-label">
+            <input type="checkbox" [checked]="isSaleSelected(item.id)" (change)="toggleSaleSelection(item.id, $event)">
+            <span>
+              <strong>{{ item.name }}</strong>
+              <small *ngIf="item.description">{{ item.description }}</small>
+            </span>
+          </label>
+          <div class="price">{{ formatCurrency(item.saleDetails?.unitPrice) }} / item</div>
+          <input class="qty" type="number" min="1" [disabled]="!isSaleSelected(item.id)" [ngModel]="selectedSaleItems.get(item.id || 0) || 1" (ngModelChange)="setSaleQuantity(item.id || 0, $event)">
+        </div>
+      </section>
+    </div>
+    <button type="button" class="primary" (click)="applySelections(true)" [disabled]="isUpdatingItems">
+      {{ isUpdatingItems ? 'Updating...' : 'Apply items' }}
+    </button>
+  </div>
+</div>

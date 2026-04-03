@@ -1,0 +1,66 @@
+<section class="bank-accounts">
+  <header class="header">
+    <div>
+      <p class="eyebrow">Bank Accounts</p>
+      <h1>Merchant payout accounts</h1>
+      <p class="subtitle">Manage bank accounts shown to campers at checkout.</p>
+    </div>
+  </header>
+
+  <div class="state error" *ngIf="errorMessage">{{ errorMessage }}</div>
+  <div class="state success" *ngIf="successMessage">{{ successMessage }}</div>
+
+  <div class="form-card">
+    <h3>{{ editingId ? 'Edit account' : 'Add new account' }}</h3>
+    <div class="form-grid">
+      <label>
+        Bank
+        <select [(ngModel)]="form.bankCode" [disabled]="!canEdit">
+          <option value="">Select bank</option>
+          <option *ngFor="let bank of banks" [value]="bank.code">{{ bank.name }}</option>
+        </select>
+      </label>
+      <label>
+        Account name
+        <input type="text" [(ngModel)]="form.accountName" [disabled]="!canEdit" placeholder="Account holder name">
+      </label>
+      <label>
+        Account number
+        <input type="text" [(ngModel)]="form.accountNumber" [disabled]="!canEdit" placeholder="Account number">
+      </label>
+      <label class="switch">
+        <span>Active</span>
+        <input type="checkbox" [(ngModel)]="form.isActive" [disabled]="!canEdit">
+      </label>
+    </div>
+    <div class="actions">
+      <button type="button" class="primary" (click)="save()" [disabled]="!canEdit">Save</button>
+      <button type="button" class="ghost" (click)="cancelEdit()" *ngIf="editingId">Cancel</button>
+    </div>
+  </div>
+
+  <div class="table" *ngIf="accounts.length > 0">
+    <div class="row header">
+      <span>Bank</span>
+      <span>Account name</span>
+      <span>Account number</span>
+      <span>Status</span>
+      <span></span>
+    </div>
+
+    <div class="row" *ngFor="let account of accounts">
+      <span class="cell" data-label="Bank">{{ account.bankName || account.bankCode }}</span>
+      <span class="cell" data-label="Name">{{ account.accountName }}</span>
+      <span class="cell" data-label="Number">{{ account.accountNumber }}</span>
+      <span class="cell" data-label="Status">{{ account.isActive ? 'Active' : 'Inactive' }}</span>
+      <div class="cell actions">
+        <button type="button" class="ghost" (click)="startEdit(account)" [disabled]="!canEdit">Edit</button>
+        <button type="button" class="danger" (click)="remove(account)" [disabled]="!canEdit">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="state" *ngIf="!isLoading && accounts.length === 0">
+    No bank accounts yet.
+  </div>
+</section>

@@ -1,0 +1,170 @@
+<div class="merchant-shell" [class.nav-open]="isNavOpen">
+  <aside class="sidebar" aria-label="Merchant navigation" [class.collapsed]="isNavCollapsed">
+    <div class="brand">
+      <div class="brand-left">
+        <span class="logo">SC</span>
+        <div class="brand-text">
+          <div class="title">SpotCamp</div>
+          <div class="subtitle">Merchant Console</div>
+        </div>
+      </div>
+      <button
+        type="button"
+        class="collapse-toggle"
+        (click)="toggleSidebar()"
+        [attr.aria-pressed]="isNavCollapsed"
+        aria-label="Toggle sidebar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15 18l-6-6 6-6"></path>
+          <path d="M21 18l-6-6 6-6"></path>
+        </svg>
+      </button>
+    </div>
+
+    <div
+      class="merchant-meta"
+      *ngIf="businessCode || businessName || displayName"
+      [attr.data-label]="merchantTooltip">
+      <div class="merchant-avatar" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9.5l2-5h14l2 5"></path>
+          <path d="M5 9.5v9h14v-9"></path>
+          <path d="M9 22v-7h6v7"></path>
+          <path d="M4 9.5h16"></path>
+        </svg>
+      </div>
+      <div class="merchant-meta-text">
+        <div class="merchant-code" *ngIf="businessCode">{{ businessCode }}</div>
+        <div class="merchant-name">{{ businessName || displayName }}</div>
+      </div>
+    </div>
+
+    <nav class="nav" (click)="closeNav()">
+      <a routerLink="/merchant/dashboard" routerLinkActive="active" data-label="Dashboard">
+        <span class="nav-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="8" height="8" rx="2"></rect>
+            <rect x="13" y="3" width="8" height="8" rx="2"></rect>
+            <rect x="3" y="13" width="8" height="8" rx="2"></rect>
+            <rect x="13" y="13" width="8" height="8" rx="2"></rect>
+          </svg>
+        </span>
+        <span class="nav-text">Dashboard</span>
+      </a>
+      <a routerLink="/merchant/campsites" routerLinkActive="active" data-label="Campsites">
+        <span class="nav-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s7-6.5 7-12a7 7 0 0 0-14 0c0 5.5 7 12 7 12z"></path>
+            <circle cx="12" cy="10" r="2.5"></circle>
+          </svg>
+        </span>
+        <span class="nav-text">Campsites</span>
+      </a>
+      <a routerLink="/merchant/bookings" routerLinkActive="active" data-label="Bookings">
+        <span class="nav-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2"></rect>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+            <path d="M9 16l2 2 4-4"></path>
+          </svg>
+        </span>
+        <span class="nav-text">Bookings</span>
+      </a>
+      <a routerLink="/merchant/reports" routerLinkActive="active" data-label="Reports">
+        <span class="nav-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="4" y1="20" x2="20" y2="20"></line>
+            <rect x="6" y="11" width="3" height="7" rx="1"></rect>
+            <rect x="11" y="8" width="3" height="10" rx="1"></rect>
+            <rect x="16" y="5" width="3" height="13" rx="1"></rect>
+          </svg>
+        </span>
+        <span class="nav-text">Reports</span>
+      </a>
+      <a routerLink="/merchant/bank-accounts" routerLinkActive="active" data-label="Bank Accounts">
+        <span class="nav-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="7" rx="2"></rect>
+            <path d="M5 21h14"></path>
+            <path d="M6 10v7"></path>
+            <path d="M10 10v7"></path>
+            <path d="M14 10v7"></path>
+            <path d="M18 10v7"></path>
+          </svg>
+        </span>
+        <span class="nav-text">Bank Accounts</span>
+      </a>
+      <a routerLink="/merchant/users" routerLinkActive="active" data-label="Team" *ngIf="displayRole === 'MERCHANT' || displayRole === 'MERCHANT_ADMIN'">
+        <span class="nav-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+        </span>
+        <span class="nav-text">Team</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="user-info">
+          <div class="user-name">{{ displayName }}</div>
+          <div class="user-role">{{ displayRole }}</div>
+        </div>
+        <div class="user-menu" [class.open]="isSettingsOpen">
+          <button
+            type="button"
+            class="kebab"
+            aria-label="Settings"
+            (click)="toggleSettings()">
+            &#8942;
+          </button>
+          <div class="user-dropdown" *ngIf="isSettingsOpen">
+            <a routerLink="/merchant/profile" class="menu-item" (click)="closeSettings()">
+              <span class="menu-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="8" r="4"></circle>
+                  <path d="M4 20c2.5-4 13.5-4 16 0"></path>
+                </svg>
+              </span>
+              Profile
+            </a>
+            <a routerLink="/" class="menu-item" (click)="closeSettings()">
+              <span class="menu-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                  <path d="M10 7l-5 5 5 5"></path>
+                </svg>
+              </span>
+              Back to marketplace
+            </a>
+            <button type="button" class="menu-item logout" (click)="logout()">
+              <span class="menu-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M10 17l5-5-5-5"></path>
+                  <line x1="15" y1="12" x2="3" y2="12"></line>
+                  <path d="M15 3h4v18h-4"></path>
+                </svg>
+              </span>
+              Logout
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="content">
+    <button class="nav-toggle" type="button" (click)="toggleNav()" aria-label="Toggle navigation">
+      Menu
+    </button>
+
+    <main class="main">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

@@ -1,0 +1,47 @@
+<section class="bundles">
+  <header class="header">
+    <div>
+      <p class="eyebrow">Bundles</p>
+      <h1>Bundles for {{ campsiteName || ('Campsite #' + campsiteId) }}</h1>
+      <p class="subtitle">Combine multiple products into a discounted package.</p>
+    </div>
+    <div class="header-actions">
+      <a *ngIf="canEdit" [routerLink]="['/merchant/campsites', campsiteId, 'bundles', 'new']" class="primary">Add bundle</a>
+    </div>
+  </header>
+
+  <div class="state loading" *ngIf="isLoading">Loading bundles...</div>
+  <div class="state error" *ngIf="!isLoading && errorMessage">{{ errorMessage }}</div>
+
+  <div class="state empty" *ngIf="!isLoading && !errorMessage && bundles.length === 0">
+    No bundles yet. Create your first package to boost sales.
+  </div>
+
+  <div class="grid" *ngIf="!isLoading && !errorMessage && bundles.length > 0">
+    <article class="card" *ngFor="let bundle of bundles; trackBy: trackById">
+      <div class="card-header">
+        <div>
+          <h3>{{ bundle.name || 'Untitled bundle' }}</h3>
+          <p class="description">{{ bundle.description || 'No description' }}</p>
+        </div>
+        <div class="price">{{ formatBundlePrice(bundle) }}</div>
+      </div>
+
+      <div class="meta">
+        <span class="count">{{ getComponentCount(bundle) }}</span>
+        <span class="components">{{ getComponentSummary(bundle) }}</span>
+      </div>
+
+      <div class="actions">
+        <a [routerLink]="['/merchant/campsites', campsiteId, 'bundles', bundle.id]" class="ghost">{{ canEdit ? 'Edit' : 'View' }}</a>
+        <button *ngIf="canEdit" type="button" class="danger" (click)="archiveBundle(bundle)">Archive</button>
+      </div>
+    </article>
+  </div>
+
+  <div class="pagination" *ngIf="!isLoading && page.totalPages > 1">
+    <button type="button" (click)="prevPage()" [disabled]="page.number === 0">Previous</button>
+    <span>Page {{ page.number + 1 }} of {{ page.totalPages }}</span>
+    <button type="button" (click)="nextPage()" [disabled]="page.number + 1 >= page.totalPages">Next</button>
+  </div>
+</section>

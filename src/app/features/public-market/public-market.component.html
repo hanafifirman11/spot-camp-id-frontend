@@ -1,0 +1,142 @@
+<app-navbar></app-navbar>
+
+<div class="hero">
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <h1>Find Your Perfect<br>Camping Spot</h1>
+    <p>Discover nature's best kept secrets with our interactive maps.</p>
+    
+    <div class="search-wrapper" [class.is-sticky]="isSearchSticky">
+      <div class="search-box" (click)="$event.stopPropagation()">
+        <div class="input-group">
+          <span class="icon">📍</span>
+          <input 
+            type="text" 
+            placeholder="Where do you want to camp?" 
+            [(ngModel)]="searchQuery"
+            (input)="onSearchInput()">
+          
+          <!-- Autocomplete Dropdown -->
+          <div class="autocomplete-dropdown" *ngIf="showSuggestions">
+            <div 
+              class="suggestion-item" 
+              *ngFor="let item of suggestions"
+              (click)="selectSuggestion(item)">
+              <span class="icon">⛺</span>
+              <div class="text">
+                <span class="name">{{ item.name }}</span>
+                <span class="loc">📍 {{ item.latitude }}, {{ item.longitude }}</span>
+              </div>
+              <div class="meta">
+                <div class="rating">
+                  <span class="star">⭐</span>
+                  <span class="score">{{ item.rating }}</span>
+                </div>
+                <span class="reviews">{{ item.reviews }} reviews</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="divider"></div>
+        <div class="input-group date-range-group" (click)="picker.open()">
+          <span class="icon">📅</span>
+          <mat-date-range-input [min]="minDate" [rangePicker]="picker" class="hidden-input">
+            <input matStartDate [(ngModel)]="checkIn" placeholder="Check-in">
+            <input matEndDate [(ngModel)]="checkOut" placeholder="Check-out">
+          </mat-date-range-input>
+          
+          <div class="date-display">
+            <span *ngIf="!checkIn" class="placeholder">Select Dates</span>
+            <div *ngIf="checkIn" class="stay-container">
+              <div class="stay-details">
+                <div class="stay-col">
+                  <span class="stay-label">Check-in</span>
+                  <span class="stay-value">{{ checkIn | date:'EEEE, yyyy-MM-dd' }}</span>
+                </div>
+                <div class="stay-sep" *ngIf="checkOut">
+                  <span class="arrow">→</span>
+                </div>
+                <div class="stay-col" *ngIf="checkOut">
+                  <span class="stay-label">Check-out</span>
+                  <span class="stay-value">{{ checkOut | date:'EEEE, yyyy-MM-dd' }}</span>
+                </div>
+                <div class="stay-col" *ngIf="!checkOut">
+                  <span class="stay-label">Check-out</span>
+                  <span class="stay-value placeholder">...</span>
+                </div>
+              </div>
+              <div class="duration-bottom" *ngIf="checkOut">
+                {{ getStayDuration() }}
+              </div>
+            </div>
+          </div>
+          
+          <mat-date-range-picker #picker></mat-date-range-picker>
+        </div>
+        <button (click)="search()">
+          <span>Search</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container section">
+  <div class="section-header">
+    <h2>Featured Campsites</h2>
+    <p>Handpicked spots for your next adventure</p>
+  </div>
+  
+  <div class="grid" 
+       infiniteScroll 
+       [infiniteScrollDistance]="2" 
+       [infiniteScrollThrottle]="50" 
+       (scrolled)="onScroll()">
+    <!-- Loading State -->
+    <div *ngIf="loading" class="loading-state">
+      <div class="spinner"></div>
+      <p>Finding the best spots...</p>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="error" class="error-state">
+      {{ error }}
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!loading && !error && campsites.length === 0" class="empty-state">
+      No campsites found. Try adjusting your search.
+    </div>
+
+                    <!-- Campsite Card -->
+
+                    <div *ngFor="let camp of campsites" class="card">
+
+                      <div class="card-image" [style.background-image]="getImageStyle(camp.image)">
+
+                        <span class="price-tag">From Rp {{ camp.price | number }}</span>
+
+                        <div class="overlay-gradient"></div>
+
+                      </div>      <div class="card-content">
+        <div class="card-header-row">
+          <h3>{{ camp.name }}</h3>
+          <div class="rating-box">
+            <div class="rating">
+              <span class="star">⭐</span>
+              <span class="score">{{ camp.rating }}</span>
+            </div>
+            <span class="review-count">{{ camp.reviews }} Reviews</span>
+          </div>
+        </div>
+        <p class="location">📍 {{ camp.latitude }}, {{ camp.longitude }}</p>
+        <p class="description">{{ camp.description }}</p>
+        <div class="card-footer">
+          <a [routerLink]="['/campsites', camp.id]" 
+             [queryParams]="{ checkIn: checkIn?.toISOString(), checkOut: checkOut?.toISOString() }"
+             class="btn-block">View Details</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

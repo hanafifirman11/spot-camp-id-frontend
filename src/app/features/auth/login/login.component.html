@@ -1,0 +1,60 @@
+<app-navbar></app-navbar>
+
+<div class="auth-container">
+  <div class="auth-card">
+    <div class="card-header">
+      <h2>Welcome Back</h2>
+      <p class="subtitle">Login to your SpotCamp account</p>
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <!-- Email Field -->
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <div class="input-wrapper">
+          <input 
+            id="email" 
+            type="email" 
+            formControlName="email"
+            [class.error]="isFieldInvalid('email')"
+            placeholder="Enter your email">
+        </div>
+        <div class="error-msg" *ngIf="isFieldInvalid('email')">
+          Please enter a valid email address
+        </div>
+      </div>
+
+      <!-- Password Field -->
+      <div class="form-group">
+        <label for="password">Password</label>
+        <div class="input-wrapper">
+          <input 
+            id="password" 
+            type="password" 
+            formControlName="password"
+            [class.error]="isFieldInvalid('password')"
+            placeholder="Enter your password">
+        </div>
+        <div class="error-msg" *ngIf="isFieldInvalid('password')">
+          Password is required
+        </div>
+      </div>
+
+      <!-- Error Alert -->
+      <div class="alert error" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+
+      <!-- Submit Button -->
+      <button type="submit" [disabled]="loginForm.invalid || isLoading" class="btn-submit">
+        <span *ngIf="!isLoading">Login</span>
+        <span *ngIf="isLoading" class="spinner-sm"></span>
+      </button>
+
+      <div class="footer-links">
+        <p>Don't have an account? <a routerLink="/auth/register">Register here</a></p>
+        <a routerLink="/auth/forgot-password" class="forgot-link">Forgot password?</a>
+      </div>
+    </form>
+  </div>
+</div>

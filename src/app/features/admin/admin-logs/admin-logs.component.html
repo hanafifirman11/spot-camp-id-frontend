@@ -1,0 +1,63 @@
+<section class="admin-logs">
+  <header class="page-header">
+    <div>
+      <h1>System Logs</h1>
+      <p class="subtitle">Live application logs (newest first)</p>
+    </div>
+    
+    <div class="actions">
+      <select [ngModel]="filterLevel" (ngModelChange)="onLevelChange($event)" class="filter-select">
+        <option value="">All Levels</option>
+        <option value="INFO">INFO</option>
+        <option value="WARN">WARN</option>
+        <option value="ERROR">ERROR</option>
+        <option value="DEBUG">DEBUG</option>
+      </select>
+      
+      <input 
+        type="text" 
+        [ngModel]="filterSearch" 
+        (ngModelChange)="onSearch($event)" 
+        placeholder="Search logs..." 
+        class="search-input"
+      >
+      
+      <button type="button" class="refresh-btn" (click)="page=0; loadLogs()">
+        Refresh
+      </button>
+    </div>
+  </header>
+
+  <div class="log-viewer">
+    <div class="log-header-row">
+      <span class="col-time">Timestamp</span>
+      <span class="col-level">Level</span>
+      <span class="col-logger">Logger</span>
+      <span class="col-msg">Message</span>
+    </div>
+    
+    <div class="log-content">
+      <div *ngIf="isLoading && page === 0" class="loading-state">Loading logs...</div>
+      
+      <div *ngFor="let log of logs" class="log-row" [ngClass]="getLevelClass(log.level)">
+        <span class="col-time">{{ log.timestamp }}</span>
+        <span class="col-level">
+          <span class="badge">{{ log.level }}</span>
+        </span>
+        <span class="col-logger" title="{{ log.logger }}">{{ log.logger }}</span>
+        <span class="col-msg"><pre>{{ log.message }}</pre></span>
+      </div>
+      
+      <div *ngIf="!isLoading && logs.length === 0" class="empty-state">
+        No logs found matching criteria.
+      </div>
+      
+      <div *ngIf="logs.length > 0" class="load-more-container">
+        <button *ngIf="hasMore" (click)="loadMore()" [disabled]="isLoading" class="load-more-btn">
+          {{ isLoading ? 'Loading...' : 'Load More' }}
+        </button>
+        <span *ngIf="!hasMore" class="end-marker">End of logs</span>
+      </div>
+    </div>
+  </div>
+</section>

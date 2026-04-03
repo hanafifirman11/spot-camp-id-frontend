@@ -1,0 +1,105 @@
+<section class="admin-business-detail">
+  <header class="page-header">
+    <div>
+      <a routerLink="/admin/businesses" class="back-link">← Back to businesses</a>
+      <h1>Business Detail</h1>
+      <p class="subtitle">Read-only view of merchant profile and campsites.</p>
+    </div>
+  </header>
+
+  <div class="state" *ngIf="isLoadingBusiness">Loading business detail...</div>
+  <div class="state error" *ngIf="!isLoadingBusiness && errorMessage">{{ errorMessage }}</div>
+
+  <div class="detail-card" *ngIf="business as detail">
+    <div class="detail-grid">
+      <div>
+        <div class="label">Business</div>
+        <div class="value">{{ detail.businessName || 'Unnamed business' }}</div>
+        <div class="muted">{{ detail.businessCode || 'No code' }}</div>
+      </div>
+      <div>
+        <div class="label">Owner</div>
+        <div class="value">{{ detail.ownerName || 'Unknown' }}</div>
+        <div class="muted">{{ detail.email || '-' }}</div>
+      </div>
+      <div>
+        <div class="label">Status</div>
+        <div class="value">{{ detail.status || 'UNKNOWN' }}</div>
+        <div class="muted">Created {{ detail.createdAt | date: 'mediumDate' }}</div>
+      </div>
+      <div>
+        <div class="label">Campsites</div>
+        <div class="value">{{ detail.activeCampsites ?? 0 }} active</div>
+        <div class="muted">{{ detail.totalCampsites ?? 0 }} total</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="campsite-card" *ngIf="business as detail">
+    <div class="card-header">
+      <h2>Campsites</h2>
+      <div class="filters">
+        <button type="button" [class.active]="statusFilter === ''" (click)="changeStatusFilter('')">
+          All
+        </button>
+        <button type="button" [class.active]="statusFilter === 'ACTIVE'" (click)="changeStatusFilter('ACTIVE')">
+          Active
+        </button>
+        <button type="button" [class.active]="statusFilter === 'INACTIVE'" (click)="changeStatusFilter('INACTIVE')">
+          Inactive
+        </button>
+        <button type="button" [class.active]="statusFilter === 'SUSPENDED'" (click)="changeStatusFilter('SUSPENDED')">
+          Suspended
+        </button>
+      </div>
+    </div>
+
+    <div class="state" *ngIf="isLoadingCampsites">Loading campsites...</div>
+    <div class="state error" *ngIf="!isLoadingCampsites && campsiteError">{{ campsiteError }}</div>
+
+    <div class="table-card" *ngIf="!isLoadingCampsites && campsites.length">
+      <table>
+        <thead>
+          <tr>
+            <th>Campsite</th>
+            <th>Location</th>
+            <th>Status</th>
+            <th>Min Price</th>
+            <th>Rating</th>
+            <th>Created</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let campsite of campsites">
+            <td>
+              <div class="name">{{ campsite.name || 'Untitled' }}</div>
+              <div class="muted">{{ campsite.code || 'No code' }}</div>
+            </td>
+            <td>
+              <div class="name">{{ campsite.location || '-' }}</div>
+              <div class="muted">{{ campsite.address || '-' }}</div>
+            </td>
+            <td>
+              <span class="status" [class.active]="campsite.status === 'ACTIVE'" [class.inactive]="campsite.status === 'INACTIVE'">
+                {{ campsite.status || 'UNKNOWN' }}
+              </span>
+            </td>
+            <td>{{ campsite.minPrice | number:'1.0-0' }}</td>
+            <td>{{ campsite.rating || 0 }} ({{ campsite.reviewCount || 0 }})</td>
+            <td>{{ campsite.createdAt | date: 'mediumDate' }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="pagination">
+        <button type="button" (click)="prevPage()" [disabled]="page.number === 0">Prev</button>
+        <span>Page {{ page.number + 1 }} of {{ page.totalPages || 1 }}</span>
+        <button type="button" (click)="nextPage()" [disabled]="page.number + 1 >= page.totalPages">Next</button>
+      </div>
+    </div>
+
+    <div class="empty" *ngIf="!isLoadingCampsites && !campsites.length && !campsiteError">
+      No campsites found for this business.
+    </div>
+  </div>
+</section>

@@ -1,0 +1,178 @@
+<app-navbar></app-navbar>
+
+<div class="campsite-detail-container" *ngIf="campsite">
+  <!-- Header Section -->
+  <div class="detail-header">
+    <div class="container">
+      <div class="header-content">
+        <h1>{{ campsite.name }}</h1>
+        <p class="location">📍 {{ campsite.latitude }}, {{ campsite.longitude }}</p>
+        <div class="rating">
+          <span class="star">⭐</span>
+          <span class="score">{{ campsite.rating }}</span>
+          <span class="reviews">({{ campsite.reviews }} reviews)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content Grid -->
+  <div class="container main-content">
+    
+    <!-- Left Column: Gallery & Description -->
+    <div class="content-left">
+      <div class="gallery">
+        <div class="main-image" [style.background-image]="getImageStyle(campsite.image)"></div>
+      </div>
+
+      <div class="section description-section">
+        <h2>About this Campsite</h2>
+        <p>{{ campsite.description }}</p>
+      </div>
+
+      <div class="section amenities-section">
+        <h2>Amenities</h2>
+        <div class="amenities-grid">
+          <div class="amenity-tag" *ngFor="let amenity of campsite.amenities">
+            <span class="check">✓</span> {{ amenity }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Map & Booking -->
+    <div class="content-right">
+      <div class="sticky-sidebar">
+        
+        <!-- Stay Period Card -->
+        <div class="dates-card">
+          <div class="dates-header">
+            <span class="icon">📅</span>
+            <h3>Stay Period</h3>
+          </div>
+          <div class="date-range-group" (click)="picker.open()">
+            <mat-date-range-input [min]="minDate" [rangePicker]="picker" class="hidden-input">
+              <input matStartDate [(ngModel)]="checkIn" placeholder="Check-in" (dateChange)="onDateRangeChange()">
+              <input matEndDate [(ngModel)]="checkOut" placeholder="Check-out" (dateChange)="onDateRangeChange()">
+            </mat-date-range-input>
+
+            <div class="date-display">
+              <span *ngIf="!checkIn" class="placeholder">Select Dates</span>
+              <div *ngIf="checkIn" class="stay-container">
+                <div class="stay-details">
+                  <div class="stay-col">
+                    <span class="stay-label">Check-in</span>
+                    <span class="stay-value">{{ checkIn | date:'EEEE, yyyy-MM-dd' }}</span>
+                  </div>
+                  <div class="stay-sep" *ngIf="checkOut">
+                    <span class="arrow">→</span>
+                  </div>
+                  <div class="stay-col" *ngIf="checkOut">
+                    <span class="stay-label">Check-out</span>
+                    <span class="stay-value">{{ checkOut | date:'EEEE, yyyy-MM-dd' }}</span>
+                  </div>
+                  <div class="stay-col" *ngIf="!checkOut">
+                    <span class="stay-label">Check-out</span>
+                    <span class="stay-value placeholder">...</span>
+                  </div>
+                </div>
+                <div class="duration-bottom" *ngIf="checkOut">
+                  {{ getStayDuration() }}
+                </div>
+              </div>
+            </div>
+
+            <mat-date-range-picker #picker></mat-date-range-picker>
+          </div>
+          <p class="date-error" *ngIf="dateError">{{ dateError }}</p>
+        </div>
+
+        <!-- Map Card -->
+        <div class="map-card">
+        <div class="map-header">
+          <div>
+            <h3>Select Your Spot</h3>
+            <p>Interactive Map</p>
+          </div>
+          <div class="map-zoom">
+            <button type="button" class="zoom-btn" (click)="zoomOut()" [disabled]="zoomLevel <= minZoom">−</button>
+            <span class="zoom-value">{{ (zoomLevel * 100) | number:'1.0-0' }}%</span>
+            <button type="button" class="zoom-btn" (click)="zoomIn()" [disabled]="zoomLevel >= maxZoom">+</button>
+            <button type="button" class="zoom-reset" (click)="resetZoom()">Reset</button>
+          </div>
+        </div>
+
+        <div class="map-selector" *ngIf="mapOptions.length > 0">
+          <label for="mapLayout">Map layout</label>
+          <select
+            id="mapLayout"
+            [(ngModel)]="selectedMapCode"
+            [ngModelOptions]="{ standalone: true }"
+            (change)="onMapSelectionChange()">
+            <option *ngFor="let map of mapOptions" [ngValue]="map.mapCode">
+              {{ map.mapName || ('Map ' + map.mapCode) }}
+            </option>
+          </select>
+        </div>
+        <div class="map-state loading" *ngIf="mapListLoading">Loading maps...</div>
+        <div class="map-state error" *ngIf="mapListError">{{ mapListError }}</div>
+        <div class="map-state warning" *ngIf="!isDateRangeReady()">
+          Select check-in and check-out dates to unlock availability.
+        </div>
+          
+          <div class="canvas-container" #container>
+            <!-- Konva Stage Here -->
+          </div>
+
+          <div class="map-legend">
+            <div class="legend-item"><span class="dot available"></span> Available</div>
+            <div class="legend-item"><span class="dot booked"></span> Booked</div>
+            <div class="legend-item"><span class="dot selected"></span> Selected</div>
+          </div>
+
+          <div class="selection-panel" *ngIf="selectedSpot">
+            <div class="spot-details">
+              <h4>{{ selectedSpot.name }}</h4>
+              <p class="spot-id">ID: {{ selectedSpot.id }}</p>
+              <div class="price">Rp {{ campsite.price | number }} <small>/ night</small></div>
+            </div>
+
+            <p class="hint">
+              Booking details, rental items, and sale items are selected on the next page.
+            </p>
+            <div class="state error" *ngIf="bookingError">{{ bookingError }}</div>
+            <div class="state info" *ngIf="bookingMessage">{{ bookingMessage }}</div>
+            <button class="btn-book" type="button" [disabled]="!isDateRangeReady() || checkoutLoading" (click)="handleBooking()">
+              {{ checkoutLoading ? 'Processing...' : 'Book This Spot' }}
+            </button>
+          </div>
+
+          <div class="selection-empty" *ngIf="!selectedSpot && isDateRangeReady()">
+            <p>Select a green spot on the map to book.</p>
+          </div>
+          <div class="selection-empty" *ngIf="!isDateRangeReady()">
+            <p>Pick your stay dates to see which spots are available.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="loading-screen" *ngIf="!campsite && loading">
+  <div class="spinner"></div>
+  <p>Loading campsite details...</p>
+</div>
+
+<div class="modal-backdrop" *ngIf="showAuthModal" (click)="closeAuthModal()">
+  <div class="modal" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+    <h3>Login required</h3>
+    <p>Please login as a camper to continue booking this spot.</p>
+    <div class="modal-actions">
+      <button type="button" class="primary" (click)="goToLogin()">Login</button>
+      <button type="button" class="secondary" (click)="goToRegister()">Register</button>
+      <button type="button" class="ghost" (click)="closeAuthModal()">Later</button>
+    </div>
+  </div>
+</div>

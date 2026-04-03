@@ -1,0 +1,80 @@
+<section class="campsites">
+  <header class="header">
+    <div>
+      <p class="eyebrow">Campsites</p>
+      <h1>Your listings</h1>
+      <p class="subtitle">Manage campsite details, pricing, and visibility.</p>
+    </div>
+    <div class="header-actions">
+      <div class="filter">
+        <label for="statusFilter">Status</label>
+        <select id="statusFilter" [(ngModel)]="statusFilter" (change)="applyFilters()">
+          <option *ngFor="let option of statusOptions" [ngValue]="option.value">
+            {{ option.label }}
+          </option>
+        </select>
+      </div>
+      <a *ngIf="canEdit" routerLink="/merchant/campsites/new" class="primary">Create campsite</a>
+    </div>
+  </header>
+
+  <div class="state loading" *ngIf="isLoading">Loading campsites...</div>
+  <div class="state error" *ngIf="!isLoading && errorMessage">{{ errorMessage }}</div>
+
+  <div class="state empty" *ngIf="!isLoading && !errorMessage && campsites.length === 0">
+    No campsites yet. Create your first listing to get started.
+  </div>
+
+  <div class="grid" *ngIf="!isLoading && !errorMessage && campsites.length > 0">
+    <article class="card" *ngFor="let camp of campsites; trackBy: trackById">
+      <div class="card-image" [style.background-image]="getImageStyle(camp.coverImageUrl)">
+        <span class="status"
+              [class.active]="camp.status === 'ACTIVE'"
+              [class.inactive]="camp.status === 'INACTIVE'"
+              [class.suspended]="camp.status === 'SUSPENDED'">
+          {{ formatStatus(camp.status) }}
+        </span>
+        <div class="placeholder" *ngIf="!camp.coverImageUrl">No cover image</div>
+      </div>
+      <div class="card-body">
+        <div class="title-row">
+          <h3>{{ camp.name || 'Untitled campsite' }}</h3>
+          <span class="price" *ngIf="camp.basePrice !== undefined && camp.basePrice !== null">
+            Rp {{ camp.basePrice | number }}
+          </span>
+        </div>
+        <div class="code" *ngIf="camp.code">Code {{ camp.code }}</div>
+        <p class="location">{{ camp.address || 'Address not set' }}</p>
+        <div class="meta">
+          <span class="rating">Rating {{ (camp.rating ?? 0) | number:'1.1-1' }}</span>
+          <span class="reviews">{{ camp.reviewCount ?? 0 }} reviews</span>
+        </div>
+        <div class="actions">
+          <a [routerLink]="['/merchant/campsites', camp.id]" class="ghost">{{ canEdit ? 'Manage' : 'View' }}</a>
+          <a [routerLink]="['/merchant/campsites', camp.id, 'products']" class="ghost">Products</a>
+          <a [routerLink]="['/merchant/campsites', camp.id, 'bundles']" class="ghost">Bundles</a>
+          <button
+            *ngIf="canEdit && camp.status === 'ACTIVE'"
+            type="button"
+            class="secondary"
+            (click)="deactivateCampsite(camp)">
+            Deactivate
+          </button>
+          <button
+            *ngIf="canEdit && camp.status === 'INACTIVE'"
+            type="button"
+            class="secondary"
+            (click)="activateCampsite(camp)">
+            Activate
+          </button>
+        </div>
+      </div>
+    </article>
+  </div>
+
+  <div class="pagination" *ngIf="!isLoading && page.totalPages > 1">
+    <button type="button" (click)="prevPage()" [disabled]="page.number === 0">Previous</button>
+    <span>Page {{ page.number + 1 }} of {{ page.totalPages }}</span>
+    <button type="button" (click)="nextPage()" [disabled]="page.number + 1 >= page.totalPages">Next</button>
+  </div>
+</section>

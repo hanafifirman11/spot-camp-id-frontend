@@ -1,0 +1,112 @@
+<div class="page">
+<section class="booking-detail">
+  <header class="header">
+    <div>
+      <p class="eyebrow">Booking</p>
+      <h1>Booking #{{ bookingId || '-' }}</h1>
+      <p class="subtitle">Review guest details and stay timeline.</p>
+    </div>
+    <div class="header-actions">
+      <a class="ghost" routerLink="/merchant/bookings" [queryParams]="{ campsiteId: campsiteId }">Back to bookings</a>
+    </div>
+  </header>
+
+  <div class="state loading" *ngIf="isLoading">Loading booking...</div>
+  <div class="state error" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+  <div class="content" *ngIf="!isLoading && booking">
+    <div class="panel overview">
+      <div>
+        <h2>{{ formatGuest() }}</h2>
+        <p class="meta">{{ booking.contactEmail || 'No email' }} · {{ booking.contactPhone || 'No phone' }}</p>
+      </div>
+      <span class="status" [ngClass]="statusClass(booking.status)">{{ formatStatus(booking.status) }}</span>
+    </div>
+
+    <div class="panel grid">
+      <div>
+        <h3>Stay</h3>
+        <p>{{ getDateRange() }}</p>
+        <p>Spot: {{ getSpotLabel() }}</p>
+        <p>Nights: {{ booking.nights ?? '-' }}</p>
+      </div>
+      <div>
+        <h3>Payment</h3>
+        <p>Total: {{ formatCurrency(booking.totalAmount) }}</p>
+        <p>Method: {{ booking.paymentMethod || '-' }}</p>
+        <p>Invoice: {{ booking.invoiceNumber || '-' }}</p>
+        <p *ngIf="booking.paymentBankName">Bank: {{ booking.paymentBankName }} ({{ booking.paymentBankAccountNumber }})</p>
+        <p *ngIf="booking.paymentAmount">Transfer: {{ formatCurrency(booking.paymentAmount) }}</p>
+        <p *ngIf="booking.paymentUniqueCode">Unique code: {{ booking.paymentUniqueCode }}</p>
+        <p *ngIf="booking.paymentProofStatus">Proof status: {{ booking.paymentProofStatus }}</p>
+        <p *ngIf="booking.paymentVerificationNote">Note: {{ booking.paymentVerificationNote }}</p>
+        <div class="proof" *ngIf="getProofUrl()">
+          <span>Proof</span>
+          <button type="button" class="proof-thumb" (click)="openProofModal()">
+            <img [src]="getProofUrl()" alt="Payment proof" />
+          </button>
+        </div>
+        <div class="actions" *ngIf="canVerifyPayment()">
+          <button type="button" class="primary" (click)="openVerifyModal(true)">Verify</button>
+          <button type="button" class="ghost" (click)="openVerifyModal(false)">Request re-upload</button>
+        </div>
+        <div class="actions" *ngIf="booking.status === 'CONFIRMED'">
+          <button type="button" class="ghost" (click)="completeBooking()">Mark completed</button>
+        </div>
+        <div class="actions" *ngIf="booking.status === 'CONFIRMED' || booking.status === 'COMPLETED'">
+          <button type="button" class="ghost" (click)="downloadInvoice()">Download invoice</button>
+        </div>
+        <p class="state info" *ngIf="actionMessage">{{ actionMessage }}</p>
+      </div>
+      <div>
+        <h3>Notes</h3>
+        <p>{{ booking.specialRequests || 'No special requests.' }}</p>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>Items</h3>
+      <div class="state empty" *ngIf="groupedItems.length === 0">No items recorded.</div>
+      <div class="items" *ngIf="groupedItems.length > 0">
+        <div class="item" *ngFor="let item of groupedItems; trackBy: trackByGroupedItem">
+          <div>
+            <div class="item-name">{{ item.name }}</div>
+            <div class="item-meta">
+              {{ item.type }}
+              <span *ngIf="item.nightsLabel">· {{ item.nightsLabel }}</span>
+              <span *ngIf="!item.nightsLabel">· Qty {{ item.quantity }}</span>
+            </div>
+          </div>
+          <div class="item-price">{{ formatCurrency(item.subtotal) }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+</div>
+
+<div class="modal-backdrop" *ngIf="showProofModal" (click)="closeProofModal()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <h3>Payment proof</h3>
+    <img class="modal-image" [src]="getProofUrl()" alt="Payment proof" />
+    <button type="button" class="ghost" (click)="closeProofModal()">Close</button>
+  </div>
+</div>
+
+<div class="modal-backdrop" *ngIf="showVerifyModal" (click)="closeVerifyModal()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <h3>{{ pendingApproval ? 'Verify payment' : 'Request re-upload' }}</h3>
+    <p>{{ pendingApproval ? 'Confirm payment is valid and complete.' : 'Send a request for the camper to upload a clearer proof.' }}</p>
+    <img class="modal-image" *ngIf="getProofUrl()" [src]="getProofUrl()" alt="Payment proof" />
+    <label class="note">
+      Note (optional)
+      <textarea rows="3" [(ngModel)]="verifyNote" placeholder="Add a short note..."></textarea>
+    </label>
+    <div class="actions">
+      <button type="button" class="primary" (click)="confirmVerify()" [disabled]="actionInProgress">
+        {{ actionInProgress ? 'Processing...' : (pendingApproval ? 'Confirm payment' : 'Send request') }}
+      </button>
+      <button type="button" class="ghost" (click)="closeVerifyModal()" [disabled]="actionInProgress">Cancel</button>
+    </div>
+  </div>
+</div>

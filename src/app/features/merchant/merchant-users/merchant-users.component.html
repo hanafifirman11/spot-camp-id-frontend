@@ -1,0 +1,94 @@
+<section class="merchant-users">
+  <header class="page-header">
+    <div>
+      <h1>Team Members</h1>
+      <p class="subtitle">{{ canManageUsers ? 'Manage user access to your merchant account.' : 'View team members (read-only access).' }}</p>
+    </div>
+    <button *ngIf="canManageUsers" type="button" class="btn-primary" (click)="openCreateModal()">Invite Member</button>
+  </header>
+
+  <div class="state error" *ngIf="!canManageUsers && !isLoading">
+    You don't have permission to manage users. Only merchant admins can invite, update roles, and deactivate team members.
+  </div>
+
+  <div class="state" *ngIf="isLoading">Loading team members...</div>
+  <div class="state error" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+  <div class="table-card" *ngIf="!isLoading && users.length > 0">
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of users">
+          <td>{{ user.firstName }} {{ user.lastName }}</td>
+          <td>{{ user.email }}</td>
+          <td>
+            <select *ngIf="canManageUsers" [value]="user.role" (change)="changeRole(user, $event)" class="role-select">
+              <option value="MERCHANT_ADMIN">Admin</option>
+              <option value="MERCHANT_MEMBER">Member</option>
+            </select>
+            <span *ngIf="!canManageUsers">{{ user.role === 'MERCHANT_ADMIN' ? 'Admin' : 'Member' }}</span>
+          </td>
+          <td>
+            <span class="status-badge" [class.active]="user.status === 'ACTIVE'" [class.inactive]="user.status === 'INACTIVE'">
+              {{ user.status }}
+            </span>
+          </td>
+          <td>
+            <button *ngIf="canManageUsers" type="button" class="btn-text" (click)="toggleStatus(user)">
+              {{ user.status === 'ACTIVE' ? 'Deactivate' : 'Activate' }}
+            </button>
+            <span *ngIf="!canManageUsers">-</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- Create User Modal -->
+<div class="modal-backdrop" *ngIf="showCreateModal" (click)="closeCreateModal()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Invite New Member</h3>
+      <button class="close-btn" (click)="closeCreateModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" [(ngModel)]="newUser.email" placeholder="email@example.com">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>First Name</label>
+          <input type="text" [(ngModel)]="newUser.firstName" placeholder="Jane">
+        </div>
+        <div class="form-group">
+          <label>Last Name</label>
+          <input type="text" [(ngModel)]="newUser.lastName" placeholder="Doe">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Role</label>
+        <select [(ngModel)]="newUser.role">
+          <option value="MERCHANT_MEMBER">Member (Limited Access)</option>
+          <option value="MERCHANT_ADMIN">Admin (Full Access)</option>
+        </select>
+      </div>
+      <div class="error-msg" *ngIf="createError">{{ createError }}</div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn-secondary" (click)="closeCreateModal()">Cancel</button>
+      <button type="button" class="btn-primary" [disabled]="createLoading" (click)="createUser()">
+        {{ createLoading ? 'Sending Invite...' : 'Send Invite' }}
+      </button>
+    </div>
+  </div>
+</div>

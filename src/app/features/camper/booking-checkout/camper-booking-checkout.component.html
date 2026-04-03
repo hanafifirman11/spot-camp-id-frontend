@@ -1,0 +1,69 @@
+<app-navbar></app-navbar>
+<div class="page">
+  <section class="checkout" *ngIf="!isLoading">
+    <div class="state error" *ngIf="errorMessage">{{ errorMessage }}</div>
+    <div class="state success" *ngIf="successMessage">{{ successMessage }}</div>
+
+    <div class="card" *ngIf="booking">
+      <h2>Transfer payment</h2>
+      <p>Transfer the exact amount to the selected bank account.</p>
+
+      <div class="row" *ngIf="booking.contactName">
+        <span>Contact</span>
+        <strong>{{ booking.contactName }}</strong>
+      </div>
+      <div class="row" *ngIf="booking.contactEmail">
+        <span>Email</span>
+        <strong>{{ booking.contactEmail }}</strong>
+      </div>
+      <div class="row" *ngIf="booking.contactPhone">
+        <span>Phone</span>
+        <strong>{{ booking.contactPhone }}</strong>
+      </div>
+
+      <div class="row">
+        <span>Amount to transfer</span>
+        <strong>{{ formatCurrency(booking.paymentAmount) }}</strong>
+      </div>
+      <div class="row" *ngIf="booking.paymentUniqueCode !== null && booking.paymentUniqueCode !== undefined">
+        <span>Unique code</span>
+        <strong>{{ booking.paymentUniqueCode }}</strong>
+      </div>
+      <div class="row" *ngIf="booking.paymentBankName">
+        <span>Bank</span>
+        <strong>{{ booking.paymentBankName }}</strong>
+      </div>
+      <div class="row" *ngIf="booking.paymentBankAccountNumber">
+        <span>Account number</span>
+        <strong>{{ booking.paymentBankAccountNumber }}</strong>
+      </div>
+      <div class="row" *ngIf="booking.paymentBankAccountName">
+        <span>Account name</span>
+        <strong>{{ booking.paymentBankAccountName }}</strong>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Upload payment proof</h3>
+      <input type="file" #fileInput />
+      <button type="button" class="primary" (click)="uploadProof(fileInput)" [disabled]="isUploading">
+        {{ isUploading ? 'Uploading...' : 'Upload proof' }}
+      </button>
+      <p class="state info" *ngIf="booking?.paymentProofStatus">Status: {{ booking?.paymentProofStatus }}</p>
+      <div class="proof" *ngIf="getProofUrl()">
+        <span>Proof</span>
+        <button type="button" class="proof-thumb" (click)="openProofModal()">
+          <img [src]="getProofUrl()" alt="Payment proof" />
+        </button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="modal-backdrop" *ngIf="showProofModal" (click)="closeProofModal()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <h3>Payment proof</h3>
+    <img class="modal-image" [src]="getProofUrl()" alt="Payment proof" />
+    <button type="button" class="ghost" (click)="closeProofModal()">Close</button>
+  </div>
+</div>

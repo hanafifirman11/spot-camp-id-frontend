@@ -1,0 +1,98 @@
+<app-navbar></app-navbar>
+
+<div class="auth-container">
+  <div class="auth-card">
+    <div class="card-header">
+      <h2>Create Account</h2>
+      <p class="subtitle">Join the SpotCamp community</p>
+    </div>
+
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+      
+      <div class="row">
+        <!-- First Name -->
+        <div class="form-group half">
+          <label for="firstName">First Name</label>
+          <div class="input-wrapper">
+            <input id="firstName" type="text" formControlName="firstName" [class.error]="isFieldInvalid('firstName')">
+          </div>
+        </div>
+        <!-- Last Name -->
+        <div class="form-group half">
+          <label for="lastName">Last Name</label>
+          <div class="input-wrapper">
+            <input id="lastName" type="text" formControlName="lastName" [class.error]="isFieldInvalid('lastName')">
+          </div>
+        </div>
+      </div>
+
+      <!-- Phone -->
+      <div class="form-group">
+        <label for="phone">Phone Number</label>
+        <div class="input-wrapper">
+          <input id="phone" type="tel" formControlName="phone" placeholder="+62..." [class.error]="isFieldInvalid('phone')">
+        </div>
+      </div>
+
+      <!-- Role Selection -->
+      <div class="form-group">
+        <label>I want to:</label>
+        <div class="radio-group">
+          <label class="radio-label" [class.selected]="registerForm.get('role')?.value === 'CAMPER'">
+            <input type="radio" formControlName="role" value="CAMPER">
+            <span class="radio-text">
+              <strong>Book Campsites</strong>
+              <small>I'm a Camper</small>
+            </span>
+          </label>
+          <label class="radio-label" [class.selected]="registerForm.get('role')?.value === 'MERCHANT'">
+            <input type="radio" formControlName="role" value="MERCHANT">
+            <span class="radio-text">
+              <strong>Host Campsites</strong>
+              <small>I'm a Merchant</small>
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Business Name (Merchant Only) -->
+      <div class="form-group fade-in" *ngIf="registerForm.get('role')?.value === 'MERCHANT'">
+        <label for="businessName">Business Name</label>
+        <div class="input-wrapper">
+          <input id="businessName" type="text" formControlName="businessName" placeholder="e.g. Pine Valley Camp">
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <div class="input-wrapper">
+          <input id="email" type="email" formControlName="email" [class.error]="isFieldInvalid('email')">
+        </div>
+        <div class="error-msg" *ngIf="isFieldInvalid('email')">Invalid email format</div>
+      </div>
+
+      <!-- Password -->
+      <div class="form-group">
+        <label for="password">Password</label>
+        <div class="input-wrapper">
+          <input id="password" type="password" formControlName="password" [class.error]="isFieldInvalid('password')">
+        </div>
+        <div class="error-msg" *ngIf="isFieldInvalid('password')">Min 8 chars, 1 uppercase, 1 number</div>
+      </div>
+
+      <!-- Error Alert -->
+      <div class="alert error" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+      <!-- Submit -->
+      <button type="submit" [disabled]="registerForm.invalid || isLoading" class="btn-submit">
+        <span *ngIf="!isLoading">Register</span>
+        <span *ngIf="isLoading" class="spinner-sm"></span>
+      </button>
+
+      <div class="footer-links">
+        <p>Already have an account? <a routerLink="/auth/login">Login here</a></p>
+      </div>
+    </form>
+  </div>
+</div>

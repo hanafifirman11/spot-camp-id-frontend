@@ -1,0 +1,10 @@
+<app-loading-bar></app-loading-bar>
+<router-outlet></router-outlet>
+
+<button 
+  class="back-to-top" 
+  [class.visible]="showBackToTop" 
+  (click)="scrollToTop()" 
+  aria-label="Back to Top">
+  ↑
+</button>

@@ -1,0 +1,169 @@
+<div class="admin-shell" [class.nav-open]="isNavOpen">
+  <aside class="sidebar" aria-label="Admin navigation" [class.collapsed]="isNavCollapsed">
+    <div class="brand">
+      <div class="brand-left">
+        <span class="logo">SC</span>
+        <div class="brand-text">
+          <div class="title">SpotCamp</div>
+          <div class="subtitle">Superadmin Console</div>
+        </div>
+      </div>
+      <button
+        type="button"
+        class="collapse-toggle"
+        (click)="toggleSidebar()"
+        [attr.aria-pressed]="isNavCollapsed"
+        aria-label="Toggle sidebar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15 18l-6-6 6-6"></path>
+          <path d="M21 18l-6-6 6-6"></path>
+        </svg>
+      </button>
+    </div>
+
+    <div class="admin-meta" *ngIf="displayName" [attr.data-label]="displayName">
+      <div class="admin-avatar" aria-hidden="true">
+        <span class="admin-initials">{{ initials }}</span>
+      </div>
+      <div class="admin-meta-text">
+        <div class="admin-name">{{ displayName }}</div>
+        <div class="admin-role">{{ displayRole }}</div>
+      </div>
+    </div>
+
+    <nav class="nav" (click)="closeNav()">
+      <a routerLink="/admin/dashboard" routerLinkActive="active" data-label="Dashboard">
+        <span class="nav-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="8" height="8" rx="2"></rect>
+            <rect x="13" y="3" width="8" height="8" rx="2"></rect>
+            <rect x="3" y="13" width="8" height="8" rx="2"></rect>
+            <rect x="13" y="13" width="8" height="8" rx="2"></rect>
+          </svg>
+        </span>
+        <span class="nav-text">Dashboard</span>
+      </a>
+      <a routerLink="/admin/businesses" routerLinkActive="active" data-label="Businesses">
+        <span class="nav-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="7" width="18" height="14" rx="2"></rect>
+            <path d="M7 7V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2"></path>
+            <path d="M3 12h18"></path>
+          </svg>
+        </span>
+        <span class="nav-text">Businesses</span>
+      </a>
+      <a routerLink="/admin/campsites" routerLinkActive="active" data-label="Campsites">
+        <span class="nav-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 20h18"></path>
+            <path d="M6 20V9l6-4 6 4v11"></path>
+            <path d="M9 12h6"></path>
+            <path d="M12 12v8"></path>
+          </svg>
+        </span>
+        <span class="nav-text">Campsites</span>
+      </a>
+      <a routerLink="/admin/bookings" routerLinkActive="active" data-label="Bookings">
+        <span class="nav-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2"></rect>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+            <path d="M9 16l2 2 4-4"></path>
+          </svg>
+        </span>
+        <span class="nav-text">Bookings</span>
+      </a>
+      <a routerLink="/admin/reports" routerLinkActive="active" data-label="Reports">
+        <span class="nav-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="4" y1="20" x2="20" y2="20"></line>
+            <rect x="6" y="11" width="3" height="7" rx="1"></rect>
+            <rect x="11" y="8" width="3" height="10" rx="1"></rect>
+            <rect x="16" y="5" width="3" height="13" rx="1"></rect>
+          </svg>
+        </span>
+        <span class="nav-text">Reports</span>
+      </a>
+      <a routerLink="/admin/users" routerLinkActive="active" data-label="Users">
+        <span class="nav-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="9" cy="8" r="4"></circle>
+            <path d="M17 11a3.5 3.5 0 1 0-2.5-6"></path>
+            <path d="M2 20c1.5-4 9.5-4 11 0"></path>
+            <path d="M16 20c.7-1.9 2.7-2.9 5-3"></path>
+          </svg>
+        </span>
+        <span class="nav-text">Users</span>
+      </a>
+      <a routerLink="/admin/themes" routerLinkActive="active" data-label="Themes">
+        <span class="nav-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path>
+          </svg>
+        </span>
+        <span class="nav-text">Themes</span>
+      </a>
+      <a routerLink="/admin/logs" routerLinkActive="active" data-label="Logs">
+        <span class="nav-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="21 12 9 12 12 3 3 12 15 12 12 21"></polyline>
+          </svg>
+        </span>
+        <span class="nav-text">Logs</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="user-info">
+          <div class="user-name">{{ displayName }}</div>
+          <div class="user-role">{{ displayRole }}</div>
+        </div>
+        <div class="user-menu" [class.open]="isSettingsOpen">
+          <button
+            type="button"
+            class="kebab"
+            aria-label="Settings"
+            (click)="toggleSettings()">
+            &#8942;
+          </button>
+          <div class="user-dropdown" *ngIf="isSettingsOpen">
+            <a routerLink="/profile-management" class="menu-item" (click)="closeSettings()">
+              <span class="menu-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="8" r="4"></circle>
+                  <path d="M4 20c2.5-4 13.5-4 16 0"></path>
+                </svg>
+              </span>
+              Profile
+            </a>
+            <button type="button" class="menu-item logout" (click)="logout()">
+              <span class="menu-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M10 17l5-5-5-5"></path>
+                  <line x1="15" y1="12" x2="3" y2="12"></line>
+                  <path d="M15 3h4v18h-4"></path>
+                </svg>
+              </span>
+              Logout
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="content">
+    <button class="nav-toggle" type="button" (click)="toggleNav()" aria-label="Toggle navigation">
+      Menu
+    </button>
+
+    <main class="main">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

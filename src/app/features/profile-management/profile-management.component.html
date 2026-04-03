@@ -1,0 +1,142 @@
+<app-navbar *ngIf="showNavbar"></app-navbar>
+
+<main class="page">
+  <header class="hero">
+    <div>
+      <p class="eyebrow">Account</p>
+      <h1>{{ title }}</h1>
+      <p class="subtitle">{{ subtitle }}</p>
+    </div>
+    <div class="summary" *ngIf="profile">
+      <span class="label">Signed in as</span>
+      <span class="value">{{ profile.email || 'Unknown email' }}</span>
+      <span class="chip" [class.verified]="profile.emailVerified">
+        {{ profile.emailVerified ? 'Verified email' : 'Unverified email' }}
+      </span>
+      <div class="business" *ngIf="profile.businessName || profile.businessCode">
+        <span class="business-name" *ngIf="profile.businessName">{{ profile.businessName }}</span>
+        <span class="business-code" *ngIf="profile.businessCode">{{ profile.businessCode }}</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="toast-stack" *ngIf="loadError || profileError || profileMessage || passwordError || passwordMessage">
+    <div class="toast error" *ngIf="loadError && !isLoading">{{ loadError }}</div>
+    <div class="toast error" *ngIf="profileError">{{ profileError }}</div>
+    <div class="toast info" *ngIf="profileMessage">{{ profileMessage }}</div>
+    <div class="toast error" *ngIf="passwordError">{{ passwordError }}</div>
+    <div class="toast info" *ngIf="passwordMessage">{{ passwordMessage }}</div>
+  </div>
+
+  <div class="state loading" *ngIf="isLoading">Loading profile...</div>
+
+  <div class="grid" *ngIf="!isLoading && !loadError">
+    <section class="panel">
+      <div class="panel-header">
+        <div>
+          <h2>Profile details</h2>
+          <p>Update your name, phone number, and avatar.</p>
+        </div>
+        <button type="button" class="primary" (click)="saveProfile()" [disabled]="isSavingProfile">
+          {{ isSavingProfile ? 'Saving...' : 'Save profile' }}
+        </button>
+      </div>
+
+      <form class="form-grid" [formGroup]="profileForm">
+        <div class="form-field">
+          <label for="firstName">First name</label>
+          <input id="firstName" type="text" formControlName="firstName" [class.invalid]="isFieldInvalid('firstName')">
+          <span class="error" *ngIf="isFieldInvalid('firstName')">First name is required.</span>
+        </div>
+
+        <div class="form-field">
+          <label for="lastName">Last name</label>
+          <input id="lastName" type="text" formControlName="lastName" [class.invalid]="isFieldInvalid('lastName')">
+          <span class="error" *ngIf="isFieldInvalid('lastName')">Last name is required.</span>
+        </div>
+
+        <div class="form-field">
+          <label for="email">Email</label>
+          <input id="email" type="email" [value]="profile?.email || ''" disabled>
+        </div>
+
+        <div class="form-field">
+          <label for="phone">Phone</label>
+          <input id="phone" type="text" formControlName="phone" [class.invalid]="isFieldInvalid('phone')" placeholder="+628123456789">
+          <span class="error" *ngIf="isFieldInvalid('phone')">Use E.164 format, e.g. +628123456789.</span>
+        </div>
+
+        <div class="form-field full">
+          <label for="avatar">Avatar URL</label>
+          <input id="avatar" type="url" formControlName="avatar" placeholder="https://example.com/avatar.jpg">
+        </div>
+
+        <div class="avatar-preview" [class.empty]="!avatarPreview">
+          <div class="avatar-image" [style.background-image]="avatarPreview ? 'url(' + avatarPreview + ')' : ''"></div>
+          <span *ngIf="!avatarPreview">No avatar set</span>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel">
+      <div class="panel-header">
+        <div>
+          <h2>Security</h2>
+          <p>Change your password to keep your account secure.</p>
+        </div>
+        <button type="button" class="primary" (click)="changePassword()" [disabled]="isSavingPassword">
+          {{ isSavingPassword ? 'Updating...' : 'Update password' }}
+        </button>
+      </div>
+
+      <form class="form-grid" [formGroup]="passwordForm">
+        <div class="form-field full">
+          <label for="currentPassword">Current password</label>
+          <input id="currentPassword" type="password" formControlName="currentPassword"
+                 [class.invalid]="isPasswordFieldInvalid('currentPassword')">
+          <span class="error" *ngIf="isPasswordFieldInvalid('currentPassword')">Current password is required.</span>
+        </div>
+
+        <div class="form-field">
+          <label for="newPassword">New password</label>
+          <input id="newPassword" type="password" formControlName="newPassword"
+                 [class.invalid]="isPasswordFieldInvalid('newPassword')">
+          <span class="error" *ngIf="isPasswordFieldInvalid('newPassword')">
+            Must be 8+ chars with upper, lower, and number.
+          </span>
+        </div>
+
+        <div class="form-field">
+          <label for="confirmPassword">Confirm password</label>
+          <input id="confirmPassword" type="password" formControlName="confirmPassword"
+                 [class.invalid]="isPasswordFieldInvalid('confirmPassword') || passwordMismatch">
+          <span class="error" *ngIf="isPasswordFieldInvalid('confirmPassword')">Confirm your new password.</span>
+          <span class="error" *ngIf="passwordMismatch">Passwords do not match.</span>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel">
+      <div class="panel-header">
+        <div>
+          <h2>Preferences</h2>
+          <p>Personalize your SpotCamp experience.</p>
+        </div>
+        <button type="button" class="primary" (click)="saveProfile()" [disabled]="isSavingProfile">
+          {{ isSavingProfile ? 'Saving...' : 'Save preferences' }}
+        </button>
+      </div>
+
+      <form class="form-grid" [formGroup]="profileForm">
+        <div class="form-field full toggle-field">
+          <label for="darkMode">Dark mode</label>
+          <div class="toggle">
+            <input id="darkMode" type="checkbox" formControlName="darkMode">
+            <span class="toggle-track"></span>
+            <span class="toggle-label">Enable dark mode across all pages</span>
+          </div>
+        </div>
+      </form>
+    </section>
+  </div>
+</main>

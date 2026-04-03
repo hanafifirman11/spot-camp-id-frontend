@@ -1,0 +1,254 @@
+<section class="editor">
+  <header class="header">
+    <div>
+      <p class="eyebrow">{{ isEditMode ? 'Campsite details' : 'Create campsite' }}</p>
+      <h1>{{ isEditMode ? (detail?.name || 'Campsite') : 'New campsite' }}</h1>
+      <p class="subtitle">
+        {{ isEditMode ? 'Update listing details, amenities, rules, and images.' : 'Add the essentials to launch a new campsite.' }}
+      </p>
+      <div class="meta" *ngIf="isEditMode">
+        <span class="status"
+              [class.active]="detail?.status === 'ACTIVE'"
+              [class.inactive]="detail?.status === 'INACTIVE'"
+              [class.suspended]="detail?.status === 'SUSPENDED'">
+          {{ detail?.status || 'UNKNOWN' }}
+        </span>
+        <span class="code" *ngIf="detail?.code">Code {{ detail?.code }}</span>
+        <span class="updated" *ngIf="detail?.updatedAt">Updated {{ detail?.updatedAt | date:'medium' }}</span>
+      </div>
+    </div>
+    <div class="header-actions">
+      <a routerLink="/merchant/campsites" class="ghost">Back to list</a>
+      <button type="button" class="primary" (click)="saveCampsite()" [disabled]="isSaving">
+        {{ isEditMode ? 'Save changes' : 'Create campsite' }}
+      </button>
+    </div>
+  </header>
+
+  <div class="toast-stack"
+       *ngIf="loadError || saveError || saveMessage || imageMessage || imageError || amenitiesMessage || amenitiesError || rulesMessage || rulesError">
+    <div class="toast error" *ngIf="!isLoading && loadError">{{ loadError }}</div>
+    <div class="toast error" *ngIf="!isLoading && saveError">{{ saveError }}</div>
+    <div class="toast info" *ngIf="!isLoading && saveMessage">{{ saveMessage }}</div>
+    <div class="toast info" *ngIf="imageMessage">{{ imageMessage }}</div>
+    <div class="toast error" *ngIf="imageError">{{ imageError }}</div>
+    <div class="toast info" *ngIf="amenitiesMessage">{{ amenitiesMessage }}</div>
+    <div class="toast error" *ngIf="amenitiesError">{{ amenitiesError }}</div>
+    <div class="toast info" *ngIf="rulesMessage">{{ rulesMessage }}</div>
+    <div class="toast error" *ngIf="rulesError">{{ rulesError }}</div>
+  </div>
+
+  <div class="state loading" *ngIf="isLoading">Loading campsite...</div>
+
+  <div class="content" *ngIf="!isLoading">
+    <section class="panel">
+      <div class="panel-header">
+        <div>
+          <h2>Listing details</h2>
+          <p>Set the core information used on the public listing.</p>
+        </div>
+      </div>
+      <form class="form-grid" [formGroup]="form">
+        <div class="form-field full">
+          <label for="name">Campsite name</label>
+          <input id="name" type="text" formControlName="name" [class.invalid]="isFieldInvalid('name')">
+          <span class="error" *ngIf="isFieldInvalid('name')">Name is required.</span>
+        </div>
+
+        <div class="form-field full">
+          <label for="description">Description</label>
+          <textarea id="description" rows="4" formControlName="description"></textarea>
+        </div>
+
+        <div class="form-field full">
+          <label for="address">Address</label>
+          <input id="address" type="text" formControlName="address" [class.invalid]="isFieldInvalid('address')">
+          <span class="error" *ngIf="isFieldInvalid('address')">Address is required.</span>
+        </div>
+
+        <div class="form-field">
+          <label for="basePrice">Base price (Rp)</label>
+          <input id="basePrice" type="number" min="0" formControlName="basePrice" [class.invalid]="isFieldInvalid('basePrice')">
+          <span class="error" *ngIf="isFieldInvalid('basePrice')">Base price is required.</span>
+        </div>
+
+        <div class="form-field">
+          <label for="contactPhone">Contact phone</label>
+          <input id="contactPhone" type="text" formControlName="contactPhone">
+        </div>
+
+        <div class="form-field">
+          <label for="contactEmail">Contact email</label>
+          <input id="contactEmail" type="email" formControlName="contactEmail">
+        </div>
+
+        <div class="form-field">
+          <label for="checkInTime">Check-in time</label>
+          <input id="checkInTime" type="time" formControlName="checkInTime">
+        </div>
+
+        <div class="form-field">
+          <label for="checkOutTime">Check-out time</label>
+          <input id="checkOutTime" type="time" formControlName="checkOutTime">
+        </div>
+
+        <div class="form-field">
+          <label for="latitude">Latitude</label>
+          <input id="latitude" type="number" step="0.000001" formControlName="latitude">
+        </div>
+
+        <div class="form-field">
+          <label for="longitude">Longitude</label>
+          <input id="longitude" type="number" step="0.000001" formControlName="longitude">
+        </div>
+      </form>
+    </section>
+
+    <section class="panel">
+      <div class="panel-header">
+        <div>
+          <h2>Media</h2>
+          <p>Upload a cover image and gallery for your campsite.</p>
+        </div>
+        <span class="note" *ngIf="!isEditMode">Create the campsite before uploading images.</span>
+      </div>
+
+      <div class="media-sections" *ngIf="isEditMode">
+        <div class="cover-panel">
+          <h3>Dashboard cover</h3>
+          <div class="cover-preview" [style.background-image]="getImageStyle(primaryImage?.url || detail?.coverImageUrl)">
+            <span class="placeholder" *ngIf="!primaryImage && !detail?.coverImageUrl">No cover image</span>
+          </div>
+          <div class="upload-controls">
+            <input #coverInput type="file" accept="image/*" (change)="onCoverSelected($event)">
+            <input type="text" [(ngModel)]="coverCaption" name="coverCaption" placeholder="Caption (optional)">
+          </div>
+          <button type="button" class="secondary" (click)="uploadCoverImage()" [disabled]="!coverFile || imageUploading">
+            {{ imageUploading ? 'Uploading...' : 'Upload cover' }}
+          </button>
+        </div>
+
+        <div class="gallery-panel">
+          <h3>Gallery</h3>
+          <p class="hint">Upload multiple images for the campsite gallery.</p>
+          <input #galleryInput type="file" accept="image/*" multiple (change)="onGallerySelected($event)">
+          <button type="button" class="secondary" (click)="uploadGalleryImages()" [disabled]="galleryFiles.length === 0 || imageUploading">
+            {{ imageUploading ? 'Uploading...' : 'Upload gallery' }}
+          </button>
+        </div>
+      </div>
+
+      <div class="map-hint" *ngIf="isEditMode">
+        <div>
+          <h4>Site plan (denah)</h4>
+          <p>Manage the map background and spots in the map editor.</p>
+        </div>
+        <a class="ghost" [routerLink]="['/merchant/campsites', campsiteId, 'map']">Open map editor</a>
+      </div>
+
+      <div class="map-hint" *ngIf="isEditMode">
+        <div>
+          <h4>Products</h4>
+          <p>Create rental products for map spots and sale add-ons.</p>
+        </div>
+        <a class="ghost" [routerLink]="['/merchant/campsites', campsiteId, 'products']">Manage products</a>
+      </div>
+
+      <div class="map-hint" *ngIf="isEditMode">
+        <div>
+          <h4>Bundles</h4>
+          <p>Bundle products into packages with special pricing.</p>
+        </div>
+        <a class="ghost" [routerLink]="['/merchant/campsites', campsiteId, 'bundles']">Manage bundles</a>
+      </div>
+
+      <div class="media-grid" *ngIf="images.length > 0">
+        <article class="media-card" *ngFor="let image of images">
+          <div class="media-thumb" [style.background-image]="getImageStyle(image.url)"></div>
+          <div class="media-meta">
+            <span class="caption">{{ image.caption || 'Untitled image' }}</span>
+            <div class="media-actions">
+              <span class="badge" *ngIf="image.isPrimary">Cover</span>
+              <button type="button"
+                      class="ghost"
+                      *ngIf="!image.isPrimary"
+                      [disabled]="imageUploading"
+                      (click)="setPrimaryImage(image)">
+                Set as cover
+              </button>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <div class="state empty" *ngIf="images.length === 0">No images uploaded yet.</div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-header">
+        <div>
+          <h2>Amenities</h2>
+          <p>Select the amenities available at this campsite.</p>
+        </div>
+        <button type="button" class="secondary" (click)="saveAmenities()" [disabled]="!isEditMode || amenitiesSaving">
+          {{ amenitiesSaving ? 'Saving...' : 'Save amenities' }}
+        </button>
+      </div>
+
+      <div class="state empty" *ngIf="!amenitiesError && amenityGroups.length === 0">No amenities available.</div>
+
+      <div class="amenities" *ngIf="amenityGroups.length > 0">
+        <div class="amenity-group" *ngFor="let group of amenityGroups">
+          <h3>{{ group.category }}</h3>
+          <div class="amenity-list">
+            <label class="amenity-item" *ngFor="let amenity of group.items">
+              <input
+                type="checkbox"
+                [checked]="selectedAmenityIds.has(amenity.id)"
+                (change)="toggleAmenity(amenity)"
+                [disabled]="!isEditMode">
+              <span>{{ amenity.name }}</span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-header">
+        <div>
+          <h2>House rules</h2>
+          <p>Set expectations for guests staying at your campsite.</p>
+        </div>
+        <button type="button" class="secondary" (click)="saveRules()" [disabled]="!isEditMode || rulesSaving">
+          {{ rulesSaving ? 'Saving...' : 'Save rules' }}
+        </button>
+      </div>
+
+      <div class="rules">
+        <div class="rule-input">
+          <input type="text"
+                 [(ngModel)]="newRuleText"
+                 name="newRuleText"
+                 placeholder="Add a new rule"
+                 [disabled]="!isEditMode">
+          <button type="button" class="ghost" (click)="addRule()" [disabled]="!isEditMode">Add rule</button>
+        </div>
+
+        <div class="rule-list" *ngIf="rules.length > 0">
+          <div class="rule-item" *ngFor="let rule of rules; let i = index">
+            <span class="index">{{ i + 1 }}</span>
+            <input type="text" [(ngModel)]="rules[i]" name="rule-{{ i }}" [disabled]="!isEditMode">
+            <div class="rule-actions">
+              <button type="button" class="ghost" (click)="moveRule(i, -1)" [disabled]="!isEditMode || i === 0">Up</button>
+              <button type="button" class="ghost" (click)="moveRule(i, 1)" [disabled]="!isEditMode || i === rules.length - 1">Down</button>
+              <button type="button" class="danger" (click)="removeRule(i)" [disabled]="!isEditMode">Remove</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="state empty" *ngIf="rules.length === 0">No rules defined yet.</div>
+      </div>
+    </section>
+  </div>
+</section>

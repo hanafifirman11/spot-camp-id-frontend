@@ -1,0 +1,110 @@
+<form class="editor" [formGroup]="form">
+  <header class="header">
+    <div>
+      <p class="eyebrow">Bundle</p>
+      <h1>{{ isEditMode ? 'Edit bundle' : 'Create bundle' }}</h1>
+      <p class="subtitle">Add at least two products and set a bundle price.</p>
+    </div>
+    <div class="header-actions">
+      <a class="ghost" [routerLink]="['/merchant/campsites', campsiteId, 'bundles']">Back to bundles</a>
+      <button type="button" class="primary" (click)="saveBundle()" [disabled]="!canSave()">
+        {{ isSaving ? 'Saving...' : (isEditMode ? 'Update bundle' : 'Create bundle') }}
+      </button>
+    </div>
+  </header>
+
+  <div class="state loading" *ngIf="isLoading">Loading bundle data...</div>
+  <div class="state error" *ngIf="loadError">{{ loadError }}</div>
+  <div class="state error" *ngIf="saveError">{{ saveError }}</div>
+  <div class="state info" *ngIf="saveMessage">{{ saveMessage }}</div>
+
+  <div class="panel">
+    <h2>Bundle details</h2>
+    <div class="form-grid">
+      <label class="form-field">
+        Name
+        <input type="text" [class.invalid]="isFieldInvalid('name')" formControlName="name">
+      </label>
+      <label class="form-field">
+        Bundle price
+        <input type="number" min="0" [class.invalid]="isFieldInvalid('bundlePrice')" formControlName="bundlePrice">
+      </label>
+      <label class="form-field full">
+        Description
+        <textarea rows="3" formControlName="description"></textarea>
+      </label>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header">
+      <div>
+        <h2>Components</h2>
+        <p>Select 2-10 rental items to include in the bundle.</p>
+      </div>
+      <span class="badge">{{ selectedComponents.length }}/10</span>
+    </div>
+
+    <div class="component-toolbar">
+      <label class="form-field">
+        Product
+        <select [(ngModel)]="selectedProductId" [ngModelOptions]="{ standalone: true }">
+          <option [ngValue]="null">Select product</option>
+          <option *ngFor="let product of selectableProducts" [ngValue]="product.id">
+            {{ product.name || ('Product #' + product.id) }}
+          </option>
+        </select>
+      </label>
+      <button type="button" class="secondary" (click)="addComponent()" [disabled]="!selectedProductId || selectedComponents.length >= 10">
+        Add component
+      </button>
+    </div>
+
+    <div class="state info" *ngIf="selectedComponents.length === 0">
+      No components added yet.
+    </div>
+
+    <div class="component-list" *ngIf="selectedComponents.length > 0">
+      <div class="component-row" *ngFor="let component of selectedComponents; trackBy: trackByComponent">
+        <div class="component-main">
+          <div class="component-name">{{ getComponentName(component) }}</div>
+          <div class="component-meta">{{ getComponentMeta(component) }}</div>
+        </div>
+        <div class="component-actions">
+          <label>
+            Qty
+            <input
+              type="number"
+              min="1"
+              [(ngModel)]="component.quantity"
+              [ngModelOptions]="{ standalone: true }"
+              (ngModelChange)="normalizeQuantity(component)"
+            >
+          </label>
+          <button type="button" class="danger" (click)="removeComponent(component)">Remove</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel summary">
+    <h2>Pricing summary</h2>
+    <div class="summary-grid">
+      <div>Components total</div>
+      <div>{{ formatPrice(totalComponentsPrice) }}</div>
+      <div>Minimum bundle price (50% discount max)</div>
+      <div>{{ formatPrice(minAllowedPrice) }}</div>
+      <div>Bundle price</div>
+      <div>{{ formatPrice(bundlePriceValue) }}</div>
+      <div>Discount</div>
+      <div>{{ discountPercent | number:'1.0-2' }}%</div>
+    </div>
+
+    <div class="state error" *ngIf="componentsInvalid">
+      Bundle must contain between 2 and 10 products with valid quantities.
+    </div>
+    <div class="state error" *ngIf="discountInvalid">
+      Bundle price exceeds the 50% discount limit. Increase the price or adjust components.
+    </div>
+  </div>
+</form>

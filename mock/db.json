@@ -1,0 +1,271 @@
+{
+  "campsites": [
+    {
+      "id": 1,
+      "name": "Pine Forest Camp Bandung",
+      "description": "Experience nature in the heart of the pine forest. Perfect for families and groups. Enjoy the fresh air, trekking trails, and evening bonfires.",
+      "latitude": -6.123,
+      "longitude": 107.123,
+      "price": 350000,
+      "image": "assets/images/campsites/pine-forest.jpg",
+      "amenities": ["WiFi", "Parking", "Toilet", "Bonfire", "Electricity"],
+      "rating": 4.5,
+      "reviews": 120
+    },
+    {
+      "id": 2,
+      "name": "Ranca Upas Glamping",
+      "description": "Luxury camping experience with deer feeding area and hot springs nearby. Stay in comfortable igloo tents.",
+      "latitude": -6.456,
+      "longitude": 107.456,
+      "price": 750000,
+      "image": "assets/images/campsites/ranca-upas.jpg",
+      "amenities": ["Hot Water", "Breakfast", "Deer Feeding", "Parking"],
+      "rating": 4.8,
+      "reviews": 350
+    },
+    {
+      "id": 3,
+      "name": "Mount Halimun Adventure",
+      "description": "Challenging terrain for real adventurers. Hiking trails and waterfall access included. Bring your own gear or rent from us.",
+      "latitude": -6.789,
+      "longitude": 106.789,
+      "price": 150000,
+      "image": "assets/placeholder-camp.jpg",
+      "amenities": ["Trekking Guide", "River Access", "Toilet"],
+      "rating": 4.7,
+      "reviews": 85
+    },
+    {
+      "id": 4,
+      "name": "Lakeside Situ Gunung",
+      "description": "Camping by the serene lake with a view of the suspension bridge. Peaceful and misty mornings guaranteed.",
+      "latitude": -6.800,
+      "longitude": 106.900,
+      "price": 400000,
+      "image": "assets/placeholder-camp.jpg",
+      "amenities": ["Lake View", "Suspension Bridge", "Restaurant", "Toilet"],
+      "rating": 4.6,
+      "reviews": 210
+    },
+    {
+      "id": 5,
+      "name": "Cikole Jayagiri Resort",
+      "description": "Integrated camping and resort area in Lembang. Surrounded by towering pine trees and close to Tangkuban Perahu.",
+      "latitude": -6.780,
+      "longitude": 107.600,
+      "price": 300000,
+      "image": "assets/placeholder-camp.jpg",
+      "amenities": ["Outbound Area", "Paintball", "ATV", "Mosque"],
+      "rating": 4.4,
+      "reviews": 180
+    },
+    {
+      "id": 6,
+      "name": "Sunrise Point Cukul",
+      "description": "Best spot for sunrise hunters. Located in the middle of a tea plantation. Cold breeze and stunning views.",
+      "latitude": -7.200,
+      "longitude": 107.550,
+      "price": 200000,
+      "image": "assets/placeholder-camp.jpg",
+      "amenities": ["Sunrise View", "Tea Walk", "Toilet"],
+      "rating": 4.9,
+      "reviews": 95
+    },
+    {
+      "id": 7,
+      "name": "Gunung Pancar Sentul",
+      "description": "Quick getaway from Jakarta. Pine forest with easy access. Popular for pre-wedding photos and family picnics.",
+      "latitude": -6.580,
+      "longitude": 106.920,
+      "price": 250000,
+      "image": "assets/placeholder-camp.jpg",
+      "amenities": ["Easy Access", "Food Stalls", "Hammock Rental"],
+      "rating": 4.2,
+      "reviews": 500
+    },
+    {
+      "id": 8,
+      "name": "Mandalawangi Cibodas",
+      "description": "Classic camping ground at the foot of Mount Gede. Large open fields, river streams, and cool mountain air.",
+      "latitude": -6.740,
+      "longitude": 107.000,
+      "price": 180000,
+      "image": "assets/placeholder-camp.jpg",
+      "amenities": ["Large Field", "River", "National Park Access"],
+      "rating": 4.5,
+      "reviews": 300
+    },
+    {
+      "id": 9,
+      "name": "Tanakita Camping Ground",
+      "description": "Five-star camping experience in Sukabumi. Glamping tents with comfortable beds and delicious buffet meals.",
+      "latitude": -6.850,
+      "longitude": 106.950,
+      "price": 950000,
+      "image": "assets/placeholder-camp.jpg",
+      "amenities": ["Full Board Meals", "Comfortable Beds", "Hot Shower", "Guitar Rental"],
+      "rating": 4.8,
+      "reviews": 150
+    },
+    {
+      "id": 10,
+      "name": "Grafika Cikole",
+      "description": "Hobbit house style camping and wooden cabins. Very instagrammable and kid-friendly with rabbit feeding.",
+      "latitude": -6.790,
+      "longitude": 107.610,
+      "price": 500000,
+      "image": "assets/placeholder-camp.jpg",
+      "amenities": ["Hobbit Houses", "Rabbit Park", "Restaurant", "Souvenir Shop"],
+      "rating": 4.6,
+      "reviews": 400
+    },
+    {
+      "id": 11,
+      "name": "Sari Ater Campervan Park",
+      "description": "Park your campervan right next to natural hot spring pools. Unique experience in Subang.",
+      "latitude": -6.730,
+      "longitude": 107.670,
+      "price": 350000,
+      "image": "assets/placeholder-camp.jpg",
+      "amenities": ["Campervan Spot", "Hot Spring Pool", "Electricity Hookup"],
+      "rating": 4.5,
+      "reviews": 120
+    },
+    {
+      "id": 12,
+      "name": "Bukit Golf Cibodas",
+      "description": "Camping on a vast green golf course area with Mount Gede Pangrango view. Spacious and clean.",
+      "latitude": -6.750,
+      "longitude": 107.010,
+      "price": 220000,
+      "image": "assets/placeholder-camp.jpg",
+      "amenities": ["Golf View", "Clean Toilets", "Security"],
+      "rating": 4.4,
+      "reviews": 80
+    },
+    {
+      "id": 13,
+      "name": "D'Jungle Private Camp",
+      "description": "Private camping ground for exclusive groups. Located in Puncak, offering privacy and custom BBQ packages.",
+      "latitude": -6.650,
+      "longitude": 106.980,
+      "price": 450000,
+      "image": "assets/placeholder-camp.jpg",
+      "amenities": ["Private Area", "BBQ Set", "Karaoke"],
+      "rating": 4.3,
+      "reviews": 60
+    },
+    {
+      "id": 14,
+      "name": "Kampung Cai Ranca Upas",
+      "description": "Another spot in Ranca Upas closer to the water park. Fun for kids and families.",
+      "latitude": -7.150,
+      "longitude": 107.400,
+      "price": 200000,
+      "image": "assets/placeholder-camp.jpg",
+      "amenities": ["Water Park", "ATV", "Strawberry Picking"],
+      "rating": 4.4,
+      "reviews": 250
+    },
+    {
+      "id": 15,
+      "name": "Batu Kuda Manglayang",
+      "description": "Quiet pine forest on the slopes of Mount Manglayang. Perfect for hammock camping and short hikes.",
+      "latitude": -6.880,
+      "longitude": 107.750,
+      "price": 100000,
+      "image": "assets/placeholder-camp.jpg",
+      "amenities": ["Hammock Spot", "City View", "Warung"],
+      "rating": 4.5,
+      "reviews": 180
+    },
+    {
+      "id": 16,
+      "name": "Puncak Besar Camp",
+      "description": "High altitude camping with 360-degree city lights view of Bandung at night.",
+      "latitude": -7.050,
+      "longitude": 107.650,
+      "price": 150000,
+      "image": "assets/placeholder-camp.jpg",
+      "amenities": ["City Lights View", "Extreme Track", "Manual Brew Coffee"],
+      "rating": 4.7,
+      "reviews": 90
+    },
+    {
+      "id": 17,
+      "name": "Wayang Windu Panenjoan",
+      "description": "Camping amidst a vast tea garden with a stunning sunset. Wooden boardwalks make for great photos.",
+      "latitude": -7.220,
+      "longitude": 107.580,
+      "price": 180000,
+      "image": "assets/placeholder-camp.jpg",
+      "amenities": ["Tea Garden", "Sunset View", "Wooden Bridge"],
+      "rating": 4.8,
+      "reviews": 220
+    },
+    {
+      "id": 18,
+      "name": "Curug Cipamingkis",
+      "description": "Riverside camping near a beautiful waterfall. Fall asleep to the sound of nature.",
+      "latitude": -6.620,
+      "longitude": 107.020,
+      "price": 250000,
+      "image": "assets/placeholder-camp.jpg",
+      "amenities": ["Waterfall", "River", "Swimming Pool"],
+      "rating": 4.3,
+      "reviews": 140
+    },
+    {
+      "id": 19,
+      "name": "Situ Cileunca Lakeside",
+      "description": "Rafting and camping package in Pangalengan. Great for corporate gatherings and team building.",
+      "latitude": -7.180,
+      "longitude": 107.530,
+      "price": 350000,
+      "image": "assets/placeholder-camp.jpg",
+      "amenities": ["Rafting", "Flying Fox", "Group Tent"],
+      "rating": 4.6,
+      "reviews": 110
+    },
+    {
+      "id": 20,
+      "name": "Glamping Legok Kondang",
+      "description": "The ultimate luxury glamping in Ciwidey. Feels like Bali in Bandung. Private heated pools available.",
+      "latitude": -7.100,
+      "longitude": 107.420,
+      "price": 1200000,
+      "image": "assets/placeholder-camp.jpg",
+      "amenities": ["Private Pool", "Room Service", "WiFi"],
+      "rating": 4.9,
+      "reviews": 300
+    }
+  ],
+  "users": [],
+  "bookings": [],
+  "map-configs": [
+    {
+      "id": 1,
+      "campsiteId": 1,
+      "imageWidth": 800,
+      "imageHeight": 600,
+      "backgroundImageUrl": "assets/images/campsites/site-plan-1.jpg",
+      "spots": [
+        { "id": "spot_1", "name": "Pine Zone A1", "coordinates": [{ "x": 100, "y": 100 }, { "x": 200, "y": 100 }, { "x": 200, "y": 200 }, { "x": 100, "y": 200 }] },
+        { "id": "spot_2", "name": "Pine Zone A2", "coordinates": [{ "x": 220, "y": 100 }, { "x": 320, "y": 100 }, { "x": 320, "y": 200 }, { "x": 220, "y": 200 }] },
+        { "id": "spot_3", "name": "River Side R1", "coordinates": [{ "x": 100, "y": 300 }, { "x": 300, "y": 300 }, { "x": 200, "y": 450 }] }
+      ]
+    },
+    {
+      "id": 2,
+      "campsiteId": 2,
+      "imageWidth": 800,
+      "imageHeight": 600,
+      "backgroundImageUrl": "https://img.freepik.com/free-vector/landscape-park-with-map-marker-pins_23-2148293456.jpg",
+      "spots": [
+        { "id": "glamp_1", "name": "Igloo Premium 1", "coordinates": [{ "x": 50, "y": 50 }, { "x": 150, "y": 50 }, { "x": 150, "y": 150 }, { "x": 50, "y": 150 }] },
+        { "id": "glamp_2", "name": "Igloo Premium 2", "coordinates": [{ "x": 170, "y": 50 }, { "x": 270, "y": 50 }, { "x": 270, "y": 150 }, { "x": 170, "y": 150 }] }
+      ]
+    }
+  ]
+}

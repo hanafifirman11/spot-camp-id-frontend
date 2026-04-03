@@ -1,0 +1,11 @@
+export * from './auth.service';
+import { AuthService } from './auth.service';
+export * from './bundles.service';
+import { BundlesService } from './bundles.service';
+export * from './campsites.service';
+import { CampsitesService } from './campsites.service';
+export * from './maps.service';
+import { MapsService } from './maps.service';
+export * from './products.service';
+import { ProductsService } from './products.service';
+export const APIS = [AuthService, BundlesService, CampsitesService, MapsService, ProductsService];

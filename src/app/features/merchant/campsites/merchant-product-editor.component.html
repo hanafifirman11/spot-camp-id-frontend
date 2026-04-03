@@ -1,0 +1,150 @@
+<form class="editor" [formGroup]="form">
+  <header class="header">
+    <div>
+      <p class="eyebrow">Product</p>
+      <h1>{{ isEditMode ? 'Edit product' : 'Create product' }}</h1>
+      <p class="subtitle">Map rentals link to spots. Rental equipment and sale items are add-ons.</p>
+    </div>
+    <div class="header-actions">
+      <a class="ghost" [routerLink]="['/merchant/campsites', campsiteId, 'products']">Back to products</a>
+      <button type="button" class="primary" (click)="saveProduct()" [disabled]="!canEdit || !canSave() || isSaving">
+        {{ isSaving ? 'Saving...' : (isEditMode ? 'Update product' : 'Create product') }}
+      </button>
+    </div>
+  </header>
+
+  <div class="toast-stack" *ngIf="loadError || validationMessage || saveError || saveMessage">
+    <div class="toast error" *ngIf="loadError">{{ loadError }}</div>
+    <div class="toast error" *ngIf="validationMessage">{{ validationMessage }}</div>
+    <div class="toast error" *ngIf="saveError">{{ saveError }}</div>
+    <div class="toast info" *ngIf="saveMessage">{{ saveMessage }}</div>
+  </div>
+
+  <div class="panel">
+    <h2>Core details</h2>
+    <div class="form-grid">
+      <label class="form-field">
+        Name
+        <input type="text" [class.invalid]="isFieldInvalid('name')" formControlName="name">
+      </label>
+      <label class="form-field">
+        Type
+        <select formControlName="type">
+          <option *ngFor="let option of typeOptions" [ngValue]="option.value">{{ option.label }}</option>
+        </select>
+      </label>
+      <label class="form-field" *ngIf="form.get('type')?.value === 'RENTAL_ITEM'">
+        Rental type
+        <select formControlName="itemType">
+          <option *ngFor="let option of rentalItemTypeOptions" [ngValue]="option.value">
+            {{ option.label }}
+          </option>
+        </select>
+      </label>
+      <label class="form-field" *ngIf="form.get('type')?.value === 'SALE'">
+        Sale type
+        <select formControlName="itemType">
+          <option *ngFor="let option of saleItemTypeOptions" [ngValue]="option.value">
+            {{ option.label }}
+          </option>
+        </select>
+      </label>
+      <label class="form-field" *ngIf="isEditMode">
+        Status
+        <select formControlName="status">
+          <option *ngFor="let option of statusOptions" [ngValue]="option.value">{{ option.label }}</option>
+        </select>
+      </label>
+      <label class="form-field full">
+        Description
+        <textarea rows="3" formControlName="description"></textarea>
+      </label>
+    </div>
+  </div>
+
+  <div class="panel" *ngIf="form.get('type')?.value === 'RENTAL_SPOT'">
+    <h2>Rental map spot</h2>
+    <p>Map spots are booked by date range. Stock is fixed at {{ lockedStockTotal }}.</p>
+    <div class="form-grid">
+      <label class="form-field">
+        Buffer time (minutes)
+        <input type="number" min="0" formControlName="bufferTimeMinutes">
+      </label>
+      <label class="form-field">
+        Daily rate
+        <input type="number" min="0" [class.invalid]="isFieldInvalid('dailyRate')" formControlName="dailyRate">
+      </label>
+    </div>
+  </div>
+
+  <div class="panel" *ngIf="form.get('type')?.value === 'RENTAL_ITEM'">
+    <h2>Rental equipment</h2>
+    <p>Rental items return to stock after checkout.</p>
+    <div class="form-grid">
+      <label class="form-field">
+        Stock total
+        <input type="number" min="0" [class.invalid]="isFieldInvalid('stockTotal')" formControlName="stockTotal" [disabled]="isEditMode">
+      </label>
+      <label class="form-field">
+        Buffer time (minutes)
+        <input type="number" min="0" formControlName="bufferTimeMinutes">
+      </label>
+      <label class="form-field">
+        Daily rate
+        <input type="number" min="0" [class.invalid]="isFieldInvalid('dailyRate')" formControlName="dailyRate">
+      </label>
+    </div>
+  </div>
+
+  <div class="panel" *ngIf="form.get('type')?.value === 'SALE'">
+    <h2>Sale pricing</h2>
+    <p>Use sale products for add-ons like breakfast or firewood.</p>
+    <div class="form-grid">
+      <label class="form-field">
+        Base price (cost)
+        <input type="number" min="0" [class.invalid]="isFieldInvalid('basePrice')" formControlName="basePrice">
+      </label>
+      <label class="form-field">
+        Current stock
+        <input type="number" min="0" [class.invalid]="isFieldInvalid('currentStock')" formControlName="currentStock" [disabled]="isEditMode">
+      </label>
+      <label class="form-field">
+        Reorder level
+        <input type="number" min="0" formControlName="reorderLevel">
+      </label>
+      <label class="form-field">
+        Unit price (selling)
+        <input type="number" min="0" [class.invalid]="isFieldInvalid('unitPrice')" formControlName="unitPrice">
+      </label>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Images</h2>
+    <p>Optional. One URL per line.</p>
+    <label class="form-field full">
+      Image URLs
+      <textarea rows="3" formControlName="images" placeholder="https://example.com/photo-1.jpg"></textarea>
+    </label>
+  </div>
+
+  <div class="panel" *ngIf="isEditMode">
+    <h2>Stock adjustment</h2>
+    <p>Adjust stock without editing product details.</p>
+    <p *ngIf="currentProduct?.rentalDetails?.stockTotal !== undefined">Current stock: {{ currentProduct?.rentalDetails?.stockTotal }}</p>
+    <p *ngIf="currentProduct?.saleDetails?.currentStock !== undefined">Current stock: {{ currentProduct?.saleDetails?.currentStock }}</p>
+    <div class="form-grid">
+      <label class="form-field">
+        Adjustment (use negative to reduce)
+        <input type="number" [(ngModel)]="stockAdjustment" [ngModelOptions]="{ standalone: true }">
+      </label>
+      <label class="form-field">
+        Reason
+        <input type="text" [(ngModel)]="stockReason" [ngModelOptions]="{ standalone: true }">
+      </label>
+    </div>
+    <div class="state error" *ngIf="stockError">{{ stockError }}</div>
+    <div class="state info" *ngIf="stockMessage">{{ stockMessage }}</div>
+    <button type="button" class="secondary" (click)="applyStockAdjustment()">Update stock</button>
+  </div>
+</form>

@@ -1,0 +1,121 @@
+<section class="products">
+  <header class="header">
+    <div>
+      <p class="eyebrow">Products</p>
+      <h1>Inventory for {{ campsiteName || ('Campsite #' + campsiteId) }}</h1>
+      <p class="subtitle">Map rentals appear in the map editor. Rental equipment and sale items are add-ons.</p>
+    </div>
+  </header>
+
+  <div class="type-bar">
+    <div class="type-row">
+      <div class="type-tabs">
+        <button
+          *ngFor="let option of typeOptions"
+          type="button"
+          class="tab"
+          [class.active]="typeFilter === option.value"
+          (click)="setTypeFilter(option.value)">
+          {{ option.label }}
+        </button>
+      </div>
+      <div class="type-actions">
+        <a *ngIf="canEdit" [routerLink]="['/merchant/campsites', campsiteId, 'products', 'new']" class="primary add-product">Add product</a>
+        <button type="button" class="advanced-toggle" (click)="toggleAdvancedSearch()">
+          Advanced search
+          <span class="chevron" [class.open]="showAdvancedSearch">▾</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="advanced-body" *ngIf="showAdvancedSearch">
+      <div class="filter search">
+        <label for="productSearch">Search</label>
+        <input
+          id="productSearch"
+          type="text"
+          placeholder="Search products"
+          [(ngModel)]="searchQuery"
+          (keyup.enter)="applyFilters()">
+      </div>
+      <div class="filter">
+        <label for="statusFilter">Status</label>
+        <select id="statusFilter" [(ngModel)]="statusFilter">
+          <option *ngFor="let option of statusOptions" [ngValue]="option.value">
+            {{ option.label }}
+          </option>
+        </select>
+      </div>
+      <div class="search-actions">
+        <button type="button" class="primary" (click)="applyFilters()">Search</button>
+        <button type="button" class="ghost" (click)="resetFilters()">Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="state loading" *ngIf="isLoading">Loading products...</div>
+  <div class="state error" *ngIf="!isLoading && errorMessage">{{ errorMessage }}</div>
+
+  <div class="state empty" *ngIf="!isLoading && !errorMessage && products.length === 0">
+    No products yet. Create your first rental or sale product.
+  </div>
+
+  <div class="table-wrapper" *ngIf="!isLoading && !errorMessage && products.length > 0">
+    <div class="table-toolbar" *ngIf="page.totalPages > 1">
+      <button type="button" (click)="prevPage()" [disabled]="page.number === 0">Previous</button>
+      <span>Page {{ page.number + 1 }} of {{ page.totalPages }}</span>
+      <button type="button" (click)="nextPage()" [disabled]="page.number + 1 >= page.totalPages">Next</button>
+    </div>
+    <table class="products-table">
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Type</th>
+          <th>Price</th>
+          <th>Status</th>
+          <th>Stock</th>
+          <th class="actions-col">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let product of products; trackBy: trackById">
+          <td data-label="Product">
+            <div class="product-title">{{ product.name || 'Untitled product' }}</div>
+            <div class="description">{{ product.description || 'No description' }}</div>
+          </td>
+          <td data-label="Type">
+            <span class="type-chip"
+                  [class.rental-spot]="product.type === 'RENTAL_SPOT'"
+                  [class.rental-item]="product.type === 'RENTAL_ITEM'"
+                  [class.sale]="product.type === 'SALE'">
+              {{ formatType(product.type) }}
+            </span>
+          </td>
+          <td class="price-cell" data-label="Price">
+            <span class="price-chip">{{ getPriceLabel(product) }}</span>
+          </td>
+          <td data-label="Status">
+            <span class="status"
+                  [class.active]="product.status === 'ACTIVE'"
+                  [class.inactive]="product.status === 'INACTIVE'"
+                  [class.archived]="product.status === 'ARCHIVED'">
+              {{ formatStatus(product.status) }}
+            </span>
+          </td>
+          <td class="stock" data-label="Stock">{{ getStockLabel(product) }}</td>
+          <td class="table-actions" data-label="Actions">
+            <div class="actions-row">
+              <a [routerLink]="['/merchant/campsites', campsiteId, 'products', product.id]" class="ghost">{{ canEdit ? 'Edit' : 'View' }}</a>
+              <button type="button" class="danger" (click)="archiveProduct(product)">Archive</button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="table-toolbar bottom" *ngIf="page.totalPages > 1">
+      <button type="button" (click)="prevPage()" [disabled]="page.number === 0">Previous</button>
+      <span>Page {{ page.number + 1 }} of {{ page.totalPages }}</span>
+      <button type="button" (click)="nextPage()" [disabled]="page.number + 1 >= page.totalPages">Next</button>
+    </div>
+  </div>
+</section>

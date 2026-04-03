@@ -1,0 +1,175 @@
+.admin-users {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.page-header {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 20px 24px;
+  box-shadow: var(--shadow-soft);
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 11px;
+  color: rgba(16, 22, 21, 0.6);
+  margin: 0;
+}
+
+.page-header h1 {
+  margin: 6px 0 0;
+  font-size: 26px;
+}
+
+.subtitle {
+  margin: 6px 0 0;
+  color: rgba(16, 22, 21, 0.7);
+}
+
+.filters {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) 180px 160px auto auto;
+  gap: 12px;
+}
+
+.filters input,
+.filters select {
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+
+.primary,
+.ghost {
+  border-radius: 999px;
+  padding: 10px 16px;
+  font-weight: 600;
+  border: none;
+}
+
+.primary {
+  background: #101615;
+  color: #fff3df;
+}
+
+.ghost {
+  background: rgba(16, 22, 21, 0.08);
+  color: #101615;
+}
+
+.state {
+  font-weight: 600;
+  color: rgba(16, 22, 21, 0.8);
+}
+
+.state.error {
+  color: #b94b4b;
+}
+
+.table-card {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: var(--shadow-soft);
+  padding: 18px;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 760px;
+}
+
+thead {
+  text-align: left;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(16, 22, 21, 0.6);
+}
+
+th,
+td {
+  padding: 12px 8px;
+  border-bottom: 1px solid rgba(16, 22, 21, 0.08);
+}
+
+tbody tr:hover {
+  background: rgba(16, 22, 21, 0.03);
+}
+
+.name {
+  font-weight: 600;
+}
+
+.muted {
+  font-size: 12px;
+  color: rgba(16, 22, 21, 0.6);
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  background: rgba(16, 22, 21, 0.08);
+  color: #101615;
+}
+
+.status.active {
+  background: rgba(var(--primary-rgb), 0.2);
+  color: #2e5c48;
+}
+
+.status.inactive {
+  background: rgba(185, 75, 75, 0.15);
+  color: #a23a3a;
+}
+
+.status.suspended {
+  background: rgba(224, 169, 109, 0.2);
+  color: #ad6d1f;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 12px;
+  font-weight: 600;
+}
+
+.pagination button {
+  border: none;
+  background: rgba(16, 22, 21, 0.08);
+  color: #101615;
+  padding: 6px 12px;
+  border-radius: 999px;
+}
+
+.pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.empty {
+  text-align: center;
+  padding: 30px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: var(--shadow-soft);
+  color: rgba(16, 22, 21, 0.7);
+}
+
+@media (max-width: 900px) {
+  .filters {
+    grid-template-columns: 1fr;
+  }
+}

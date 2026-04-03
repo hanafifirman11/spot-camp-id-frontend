@@ -1,0 +1,42 @@
+<section class="admin-themes">
+  <header class="page-header">
+    <div>
+      <h1>Theme Management</h1>
+      <p class="subtitle">Select the visual theme for the public marketplace.</p>
+    </div>
+    <button type="button" class="refresh-btn" (click)="loadThemes()">Refresh</button>
+  </header>
+
+  <div class="state" *ngIf="isLoading && themes.length === 0">Loading themes...</div>
+
+  <div class="themes-grid" *ngIf="themes.length > 0">
+    <div class="theme-card" *ngFor="let theme of themes" [class.active]="theme.isActive">
+      <div class="theme-preview" [style]="getPreviewStyle(theme)">
+        <div class="preview-header"></div>
+        <div class="preview-body">
+          <div class="preview-hero"></div>
+          <div class="preview-lines">
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="theme-info">
+        <div class="theme-meta">
+          <h3>{{ theme.name }}</h3>
+          <span class="badge" *ngIf="theme.isActive">Active</span>
+        </div>
+        <p>{{ theme.description }}</p>
+        
+        <button 
+          type="button" 
+          class="btn-activate" 
+          [disabled]="theme.isActive || activatingId === theme.id"
+          (click)="activateTheme(theme)">
+          {{ activatingId === theme.id ? 'Activating...' : (theme.isActive ? 'Applied' : 'Activate') }}
+        </button>
+      </div>
+    </div>
+  </div>
+</section>

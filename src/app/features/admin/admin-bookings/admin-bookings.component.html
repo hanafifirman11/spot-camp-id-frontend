@@ -1,0 +1,85 @@
+<section class="bookings">
+  <header class="header">
+    <div>
+      <p class="eyebrow">Bookings</p>
+      <h1>{{ getCampsiteName() }}</h1>
+      <p class="subtitle">Monitor bookings across merchants.</p>
+    </div>
+    <div class="filters">
+      <label class="filter">
+        Merchant
+        <select [(ngModel)]="selectedBusinessId" (change)="loadCampsites()" [disabled]="isLoadingBusinesses">
+          <option [ngValue]="null">All merchants</option>
+          <option *ngFor="let business of businesses" [ngValue]="business.id">
+            {{ business.businessName || ('Business #' + business.id) }}
+          </option>
+        </select>
+      </label>
+      <label class="filter">
+        Campsite
+        <select [(ngModel)]="selectedCampsiteId" (change)="applyFilters()" [disabled]="isLoadingCampsites">
+          <option *ngIf="campsites.length === 0" [ngValue]="null">No campsites</option>
+          <option *ngFor="let camp of campsites" [ngValue]="camp.id">
+            {{ camp.name || ('Campsite #' + camp.id) }}
+          </option>
+        </select>
+      </label>
+      <label class="filter">
+        Status
+        <select [(ngModel)]="statusFilter" (change)="applyFilters()">
+          <option *ngFor="let option of statusOptions" [ngValue]="option.value">
+            {{ option.label }}
+          </option>
+        </select>
+      </label>
+      <label class="filter">
+        Check-in from
+        <input type="date" [(ngModel)]="checkInFrom" (change)="applyFilters()">
+      </label>
+      <label class="filter">
+        Check-in to
+        <input type="date" [(ngModel)]="checkInTo" (change)="applyFilters()">
+      </label>
+    </div>
+  </header>
+
+  <div class="state loading" *ngIf="isLoadingBusinesses">Loading merchants...</div>
+  <div class="state error" *ngIf="!isLoadingBusinesses && errorMessage">{{ errorMessage }}</div>
+
+  <div class="state loading" *ngIf="!isLoadingBusinesses && isLoadingCampsites">Loading campsites...</div>
+
+  <div class="state empty" *ngIf="!isLoadingBusinesses && !isLoadingCampsites && campsites.length === 0">
+    No campsites found for the selected merchant.
+  </div>
+
+  <div class="state loading" *ngIf="!isLoadingBusinesses && !isLoadingCampsites && isLoading">Loading bookings...</div>
+  <div class="state empty" *ngIf="!isLoadingBusinesses && !isLoadingCampsites && !isLoading && bookings.length === 0 && campsites.length > 0">
+    No bookings found for the selected filters.
+  </div>
+
+  <div class="table" *ngIf="!isLoadingBusinesses && !isLoadingCampsites && !isLoading && bookings.length > 0">
+    <div class="row header">
+      <span>Booking</span>
+      <span>Guest</span>
+      <span>Spot</span>
+      <span>Dates</span>
+      <span>Status</span>
+      <span>Total</span>
+    </div>
+
+    <div class="row" *ngFor="let booking of bookings; trackBy: trackById">
+      <span class="cell" data-label="Booking">#{{ booking.id }}</span>
+      <span class="cell" data-label="Guest">{{ getGuestLabel(booking) }}</span>
+      <span class="cell" data-label="Spot">{{ getSpotLabel(booking) }}</span>
+      <span class="cell" data-label="Dates">{{ booking.checkInDate || '-' }} → {{ booking.checkOutDate || '-' }}</span>
+      <span class="cell status" data-label="Status" [ngClass]="statusClass(booking.status)">{{ formatStatus(booking.status) }}</span>
+      <span class="cell" data-label="Total">{{ formatCurrency(booking.totalAmount) }}</span>
+    </div>
+  </div>
+
+  <div class="pagination" *ngIf="!isLoadingBusinesses && !isLoadingCampsites && !isLoading && page.totalPages > 1">
+    <button type="button" (click)="prevPage()" [disabled]="page.number === 0">Previous</button>
+    <span>Page {{ page.number + 1 }} of {{ page.totalPages }}</span>
+    <button type="button" (click)="nextPage()" [disabled]="page.number + 1 >= page.totalPages">Next</button>
+  </div>
+</section>
