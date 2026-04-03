@@ -1,4 +1,5 @@
 import { ApplicationConfig, importProvidersFrom, LOCALE_ID, APP_INITIALIZER } from '@angular/core';
+import { environment } from '../environments/environment';
 import { provideRouter } from '@angular/router';
 import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
@@ -40,7 +41,7 @@ export const appConfig: ApplicationConfig = {
     },
     importProvidersFrom(
       ApiModule.forRoot(() => new Configuration({
-        basePath: '/api/v1', // Configure Base Path for API Client
+        basePath: environment.apiBasePath,
         accessToken: resolveAccessToken
       }))
     )
