@@ -11,22 +11,7 @@ import {
   ProductType
 } from '../services/merchant-product.service';
 import { RoleService } from '../../../core/services/role.service';
-
-interface ProductFormValue {
-  name: string | null;
-  type: ProductType | null;
-  itemType: ProductItemType | null;
-  status: ProductStatus | null;
-  description: string | null;
-  bufferTimeMinutes: number | null;
-  dailyRate: number | null;
-  stockTotal: number | null;
-  basePrice: number | null;
-  currentStock: number | null;
-  reorderLevel: number | null;
-  unitPrice: number | null;
-  images: string | null;
-}
+import { ProductFormValue } from './models/merchant-product-editor.model';
 
 @Component({
   selector: 'app-merchant-product-editor',

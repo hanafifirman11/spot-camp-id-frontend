@@ -12,11 +12,7 @@ import {
   MerchantBooking,
   MerchantBookingService
 } from '../../merchant/services/merchant-booking.service';
-
-interface FilterOption {
-  label: string;
-  value: string;
-}
+import { FilterOption } from './models/admin-bookings.model';
 
 @Component({
   selector: 'app-admin-bookings',

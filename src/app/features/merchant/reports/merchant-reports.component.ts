@@ -8,11 +8,7 @@ import {
   DashboardData,
   ReportingService
 } from '../../../core/services/reporting.service';
-
-interface FilterOption {
-  label: string;
-  value: string;
-}
+import { FilterOption } from './models/merchant-reports.model';
 
 @Component({
   selector: 'app-merchant-reports',

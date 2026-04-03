@@ -8,15 +8,7 @@ import {
   MerchantBooking,
   MerchantBookingService
 } from '../services/merchant-booking.service';
-
-interface GroupedItem {
-  key: string;
-  name: string;
-  type: string;
-  quantity: number;
-  subtotal: number;
-  nightsLabel?: string;
-}
+import { GroupedItem } from './models/merchant-booking-detail.model';
 
 @Component({
   selector: 'app-merchant-booking-detail',
