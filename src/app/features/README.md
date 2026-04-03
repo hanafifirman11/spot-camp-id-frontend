@@ -20,3 +20,7 @@ Current shared modules are implemented in Issue #4:
 - `src/app/shared/components/empty-state/`
 - `src/app/shared/components/confirm-dialog/`
 - `src/app/shared/pipes/currency-idr.pipe.ts`
+- `src/app/shared/models/filter-option.model.ts`
+- `src/app/shared/models/grouped-item.model.ts`
+- `src/app/shared/constants/booking-status-options.const.ts`
+- `src/app/shared/services/item-grouping.service.ts`
